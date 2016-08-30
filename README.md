@@ -21,7 +21,7 @@ Where testbot - is a section into .conf file with bot profile.
 ## Dependecies
 
     hiredis
-    libstrphe >=8.5
+    libstrophe >=8.5
 
 With debian-based linux, you can use:
 
