@@ -46,7 +46,7 @@ This is example, try to send message to jid somebody@a35a17e05e4z6vxdl.onion fro
 
     echo "Done!";
 
-?>
+    ?>
 
 ## Dependecies
 
