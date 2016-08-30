@@ -1,0 +1,8 @@
+Here is debian dependencies:
+apt-get install redis-server redis-tools libhiredis-dev libstrophe-dev
+
+libstrophe will be better install from github (debian have not fresh version).
+https://github.com/strophe/libstrophe
+
+Also, will be nice - have a client
+apt-get install php5-redis
