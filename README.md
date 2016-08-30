@@ -4,24 +4,25 @@ Here is implementation XMPP/REDIS bridge in C.
 xmppredis will receive/send messages between xmpp and redis-queue's.
 
 Message format is text:
-   jid:somebody@jabberserver.org
-   message text
+
+    jid:somebody@jabberserver.org
+    message text
 
 ## Dependecies
 
-   hiredis
-   libstrphe >=8.5
+    hiredis
+    libstrphe >=8.5
 
 With debian-based linux, you can use:
 
-   apt-get install redis-server redis-tools libhiredis-dev libstrophe-dev
+    $ apt-get install redis-server redis-tools libhiredis-dev libstrophe-dev
 
 ## Build
 
 You need cmake and make to build.
 
-   cmake
-   make
+    cmake
+    make
 
 ## Licensing
 
@@ -32,4 +33,4 @@ repository's licensing information for details and exceptions.
 
 http://www.boost.org/LICENSE_1_0.txt
 
-ini.c/ini.h is licensed under the MIT License
+ini.c / ini.h is licensed under the MIT License
