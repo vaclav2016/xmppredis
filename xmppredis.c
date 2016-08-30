@@ -198,9 +198,10 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 		xmpp_stanza_set_name(pres, "presence");
 		xmpp_send(conn, pres);
 		xmpp_stanza_release(pres);
-	} else {
-		fprintf(stderr, "DEBUG: disconnected\n");
-		xmpp_stop(ctx);
+	} else if (status == XMPP_CONN_DISCONNECT || status == XMPP_CONN_FAIL){
+		xmpp_connect_client(conn, NULL, 0, conn_handler, ctx);
+//		fprintf(stderr, "DEBUG: disconnected\n");
+//		xmpp_stop(ctx);
 	}
 }
 
