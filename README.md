@@ -2,6 +2,8 @@
 
 Here is implementation XMPP/REDIS bridge in C. xmppredis will receive/send messages between Jabber and REDIS-queue's.
 
+NOTE: project is not stable.
+
 What use case for this project?
 For example, this project need if You want send messages from php-page to somebody via Jabber. In this case, You just a place message to REDIS queue.
 
@@ -15,16 +17,6 @@ Message format is simple text:
     message text
 
 For inbound queue - it will be sender jid, for outbound queue - it will be receiver jid.
-
-## Configuration
-
-See xmppredis.sample.conf file. One configuration file could contain multiple bot's account.
-
-## Run
-
-    $ xmppredis testbot xmppredis.conf
-
-Where testbot - is a section into .conf file with bot profile.
 
 ## How it works ? Example in PHP
 
@@ -48,7 +40,37 @@ This example PHP-script is try to send message to jid somebody@a35a17e05e4z6vxdl
 
     ?>
 
-## Dependecies
+## Run and Configuration
+
+You can run it with:
+
+    $ xmppredis testbot xmppredis.conf
+
+Where testbot - is a section into .conf file with bot profile.
+Lets check xmppredis.conf:
+
+    [localhostRedis]
+
+    host=127.0.0.1
+    port=6379
+
+    [testbot]
+
+    jid=testbot@not-jabber.org
+    password=secret
+
+    redis=localhostRedis
+
+    inbound=in_testbot
+    outbound=out_testbot
+
+So, when we run 
+
+    $ xmppredis testbot xmppredis.conf
+
+we mean section [testbot]. The same with string redis=localhostRedis - it is mean take redis host/port from section [localhostRedis].
+
+## Dependencies and Build
 
     hiredis
     libstrophe >=8.5
@@ -61,7 +83,7 @@ Also, may be You want install a PHP-extension:
 
     $ apt-get install php5-redis
 
-## Build
+### Build
 
 You need cmake and make to build.
 
