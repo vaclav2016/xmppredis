@@ -40,8 +40,8 @@ This example PHP-script is try to send message to jid somebody@a35a17e05e4z6vxdl
 How act this example?
 
 1. PHP push message to queue 'out_testbot'
-2. xmppredis, as queue 'out_testbot' subscriber, pickup message from queue
-3. xmppredis parse and send message
+2. xmppredis, as 'out_testbot' queue subscriber, pickup message from queue
+3. xmppredis parse and send message to somebody@a35a17e05e4z6vxdl.onion
 
 So, if You want receive jabber-messages via xmppredis - You must execute 'SUBSCRIBE in_testbot' in your application
 
@@ -76,7 +76,7 @@ So, when we run
 
 we mean section [testbot] with bot configuration.
 
-String redis=localhostRedis has the same reference - it is mean to take redis host/port from section [localhostRedis].
+String 'redis=localhostRedis' has the same reference - it is mean to take redis host/port from section [localhostRedis].
 
 So, multiple bot can have reference to the same REDIS server.
 
