@@ -44,7 +44,7 @@ With debian-based linux, you can use:
 
 You need cmake and make to build.
 
-    $ cmake
+    $ cmake ./
     $ make
 
 ## Licensing
