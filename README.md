@@ -2,7 +2,7 @@
 
 Here is implementation XMPP/REDIS bridge in C. xmppredis will receive/send messages between Jabber and REDIS-queue's.
 
-NOTE: project is not stable.
+NOTE: project is not stable for production.
 
 What use case for this project?
 For example, this project need if You want send messages from php-page to somebody via Jabber. In this case, You just a place message to REDIS queue.
