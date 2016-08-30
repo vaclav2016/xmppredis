@@ -46,7 +46,7 @@ How act this example?
 So, if You want receive jabber-messages via xmppredis - You must execute 'SUBSCRIBE in_testbot' in your application.
 
 
-## Run and Configuration
+## Xmppredis run and configuration
 
 You can run it with:
 
