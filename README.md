@@ -57,7 +57,7 @@ With debian-based linux, you can use:
 
     $ apt-get install redis-server redis-tools libhiredis-dev libstrophe-dev
 
-Also, may You want install a PHP-extension:
+Also, may be You want install a PHP-extension:
 
     $ apt-get install php5-redis
 
