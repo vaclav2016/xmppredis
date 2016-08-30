@@ -78,3 +78,9 @@ repository's licensing information for details and exceptions.
 http://www.boost.org/LICENSE_1_0.txt
 
 ini.c / ini.h is licensed under the MIT License
+
+## References
+
+1. Redis - http://redis.io/
+2. LibStrophe - https://github.com/strophe/libstrophe
+2. Hiredis - https://github.com/redis/hiredis
