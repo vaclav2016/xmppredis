@@ -7,7 +7,7 @@ For example, this project need if You want send messages from php-page to jabber
 
 Another use case - building bridges between social platforms (and email etc).
 
-So, be social !
+So, meet more people, be social ! ;)
 
 Message format is text:
 
