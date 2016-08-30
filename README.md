@@ -31,8 +31,8 @@ With debian-based linux, you can use:
 
 You need cmake and make to build.
 
-    cmake
-    make
+    $ cmake
+    $ make
 
 ## Licensing
 
