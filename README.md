@@ -100,7 +100,7 @@ repository's licensing information for details and exceptions.
 
 http://www.boost.org/LICENSE_1_0.txt
 
-ini.c / ini.h is licensed under the MIT License, original repository with sources is https://github.com/haipome/ini
+ini library (c) Haipo Yang, is licensed under the MIT License, original repository with sources is https://github.com/haipome/ini
 
 ## References
 
