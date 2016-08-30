@@ -16,6 +16,11 @@ Message format is simple text:
 
 For inbound queue - it will be sender jid, for outbound queue - it will be receiver jid.
 
+## How it works ?
+
+Just via REDIS-commands PUBLISH and SUBSCRIBE:
+http://redis.io/commands/publish
+
 ## Configuration
 
 See xmppredis.sample.conf file. One configuration file could contain multiple bot's account.
