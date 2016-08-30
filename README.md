@@ -8,6 +8,16 @@ Message format is text:
     jid:somebody@jabberserver.org
     message text
 
+## Configuration
+
+See xmppredis.sample.conf file. One configuration file could contain multiple bot's account.
+
+## Run
+
+    $ xmppredis testbot xmppredis.conf
+
+Where testbot - is a section into .conf file with bot profile.
+
 ## Dependecies
 
     hiredis
