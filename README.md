@@ -31,6 +31,25 @@ See xmppredis.sample.conf file. One configuration file could contain multiple bo
 
 Where testbot - is a section into .conf file with bot profile.
 
+## PHP Example
+
+This is example, try to send message to jid somebody@a35a17e05e4z6vxdl.onion from PHP page:
+
+    <?php
+
+    $jid = "somebody@a35a17e05e4z6vxdl.onion";
+    $msg = "Hello, world!";
+
+    $outQueue = "out_testbot";
+
+    $redis = new Redis();
+    $redis->pconnect('127.0.0.1', 6379);
+    $redis->publish($outQueue, "jid:".$jid."\n".$msg);
+
+    echo "Done!";
+
+?>
+
 ## Dependecies
 
     hiredis
