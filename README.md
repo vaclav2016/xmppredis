@@ -31,7 +31,7 @@ Where testbot - is a section into .conf file with bot profile.
 It works just via REDIS-commands PUBLISH and SUBSCRIBE:
 http://redis.io/commands/publish
 
-This is example, try to send message to jid somebody@a35a17e05e4z6vxdl.onion from PHP page:
+This example PHP-script is try to send message to jid somebody@a35a17e05e4z6vxdl.onion:
 
     <?php
 
