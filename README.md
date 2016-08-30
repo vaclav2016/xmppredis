@@ -7,7 +7,7 @@ NOTE: project is not stable.
 What use case for this project?
 For example, this project need if You want send messages from php-page to somebody via Jabber. In this case, You just a place message to REDIS queue.
 
-Another use case - building bridges between social platforms (and email etc).
+Another use case - building bridges between social platforms (email etc).
 
 So, lets meet more people, be social ! ;)
 
@@ -29,12 +29,11 @@ This example PHP-script is try to send message to jid somebody@a35a17e05e4z6vxdl
 
     $jid = "somebody@a35a17e05e4z6vxdl.onion";
     $msg = "Hello, world!";
-
     $outQueue = "out_testbot";
 
     $redis = new Redis();
-    $redis->pconnect('127.0.0.1', 6379);
-    $redis->publish($outQueue, "jid:".$jid."\n".$msg);
+    $redis->pconnect( "127.0.0.1", 6379 );
+    $redis->publish( $outQueue, "jid:" . $jid . "\n" . $msg );
 
     echo "Done!";
 
@@ -68,7 +67,11 @@ So, when we run
 
     $ xmppredis testbot xmppredis.conf
 
-we mean section [testbot] with bot configuration. The same with string redis=localhostRedis - it is mean take redis host/port from section [localhostRedis]. It is mean - multiple bot can have reference to the same REDIS server.
+we mean section [testbot] with bot configuration.
+
+String redis=localhostRedis has the same reference - it is mean to take redis host/port from section [localhostRedis].
+
+So, multiple bot can have reference to the same REDIS server.
 
 ## Dependencies and Build
 
