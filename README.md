@@ -9,7 +9,7 @@ Another use case - building bridges between social platforms (and email etc).
 
 So, meet more people, be social ! ;)
 
-Message format is text:
+Message format is simple text:
 
     jid:somebody@jabberserver.org
     message text
