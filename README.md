@@ -37,6 +37,8 @@ This example PHP-script is try to send message to jid somebody@a35a17e05e4z6vxdl
 
     ?>
 
+So, if You want receive messages - You must execute 'SUBSCRIBE in_testbot' in your application
+
 ## Run and Configuration
 
 You can run it with:
