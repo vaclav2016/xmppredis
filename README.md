@@ -1,6 +1,6 @@
 # XMPP to REDIS bridge
 
-Here is implementation XMPP/REDIS bridge in C. xmppredis will receive/send messages between Jabber and REDIS-queue's.
+Here is implementation XMPP/REDIS bridge in C. xmppredis will receive/send messages between Jabber and REDIS-queue's (or channel?).
 
 NOTE: This project is not tested for production.
 
@@ -37,7 +37,14 @@ This example PHP-script is try to send message to jid somebody@a35a17e05e4z6vxdl
 
     ?>
 
-So, if You want receive messages - You must execute 'SUBSCRIBE in_testbot' in your application
+How act this example?
+
+1. PHP push message to queue 'out_testbot'
+2. xmppredis, as queue 'out_testbot' subscriber, pickup message from queue
+3. xmppredis parse and send message
+
+So, if You want receive jabber-messages via xmppredis - You must execute 'SUBSCRIBE in_testbot' in your application
+
 
 ## Run and Configuration
 
