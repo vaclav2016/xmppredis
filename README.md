@@ -68,7 +68,7 @@ So, when we run
 
     $ xmppredis testbot xmppredis.conf
 
-we mean section [testbot]. The same with string redis=localhostRedis - it is mean take redis host/port from section [localhostRedis].
+we mean section [testbot] with bot configuration. The same with string redis=localhostRedis - it is mean take redis host/port from section [localhostRedis]. It is mean - multiple bot can have reference to the same REDIS server.
 
 ## Dependencies and Build
 
@@ -99,10 +99,11 @@ repository's licensing information for details and exceptions.
 
 http://www.boost.org/LICENSE_1_0.txt
 
-ini.c / ini.h is licensed under the MIT License
+ini.c / ini.h is licensed under the MIT License, original repository with sources is https://github.com/haipome/ini
 
 ## References
 
 1. Redis - http://redis.io/
 2. LibStrophe - https://github.com/strophe/libstrophe
-2. Hiredis - https://github.com/redis/hiredis
+3. Hiredis - https://github.com/redis/hiredis
+4. Ini library - https://github.com/haipome/ini
