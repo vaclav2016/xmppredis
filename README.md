@@ -1,6 +1,6 @@
 # XMPP to REDIS bridge
 
-Here is implementation XMPP/REDIS bridge in C. xmppredis will receive/send messages between xmpp and redis-queue's.
+Here is implementation XMPP/REDIS bridge in C. xmppredis will receive/send messages between xmpp and REDIS-queue's.
 
 What use case for this project?
 For example, this project need if You want send messages from php-page to jabber. In this case, You just a send message to REDIS queue.
