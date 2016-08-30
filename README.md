@@ -43,7 +43,7 @@ How act this example?
 2. xmppredis, as 'out_testbot' queue subscriber, pickup message from queue
 3. xmppredis parse and send message to somebody@a35a17e05e4z6vxdl.onion
 
-So, if You want receive jabber-messages via xmppredis - You must execute 'SUBSCRIBE in_testbot' in your application
+So, if You want receive jabber-messages via xmppredis - You must execute 'SUBSCRIBE in_testbot' in your application.
 
 
 ## Run and Configuration
