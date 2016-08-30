@@ -16,11 +16,6 @@ Message format is simple text:
 
 For inbound queue - it will be sender jid, for outbound queue - it will be receiver jid.
 
-## How it works ?
-
-Just via REDIS-commands PUBLISH and SUBSCRIBE:
-http://redis.io/commands/publish
-
 ## Configuration
 
 See xmppredis.sample.conf file. One configuration file could contain multiple bot's account.
@@ -31,7 +26,10 @@ See xmppredis.sample.conf file. One configuration file could contain multiple bo
 
 Where testbot - is a section into .conf file with bot profile.
 
-## PHP Example
+## How it works ? Example in PHP
+
+It works just via REDIS-commands PUBLISH and SUBSCRIBE:
+http://redis.io/commands/publish
 
 This is example, try to send message to jid somebody@a35a17e05e4z6vxdl.onion from PHP page:
 
