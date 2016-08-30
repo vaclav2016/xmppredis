@@ -9,8 +9,6 @@ For example, this project need if You want send messages from php-page to somebo
 
 Another use case - building bridges between social platforms (email etc).
 
-So, lets meet more people, be social ! ;)
-
 Message format is simple text:
 
     jid:somebody@jabberserver.org
