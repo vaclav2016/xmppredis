@@ -36,27 +36,30 @@ DEALINGS IN THE SOFTWARE.
 
 #define MESSAGE_BUF_SIZE 1024*64
 
-typedef struct _threadArgs {
+#define SKIP_SPACE(a) while(*a == ' ' && *a!=0) { a++;}
+#define DEFAUL_STR_SIZE 1024
+
+struct ThreadArgs {
 	xmpp_ctx_t *ctx;
 	xmpp_conn_t *conn;
-} threadArgs;
+};
 
-const char *insert_cmd = "PUBLISH %s %s";
-const char *get_cmd_tmpl = "LPOP %s";
-const char *subscribe_cmd_tmpl = "SUBSCRIBE %s";
+const char *PublishCmd = "PUBLISH %s %s";
+const char *SubscribeCmdTemplate = "SUBSCRIBE %s";
+const char *Prefix = "jid:";
+const int PrefixLen = 4;
 
-char get_cmd[1024];
-char subscribe_cmd[1024];
-char redisHost[1024];
-uint32_t redisPort;
+char subscribeCmd[DEFAUL_STR_SIZE];
 
-struct timeval timeout = { 10, 500000 };
-
-char redisQueueInbound[1024];
-char redisQueueOutbound[1024];
-char *msgBuffer;
-char toBuffer[1024];
-
+struct Config {
+	char redisHost[DEFAUL_STR_SIZE];
+	uint32_t redisPort;
+	struct timeval redisTimeout;
+	char jid[DEFAUL_STR_SIZE];
+	char pwd[DEFAUL_STR_SIZE];
+	char inboundQueue[DEFAUL_STR_SIZE];
+	char outboundQueue[DEFAUL_STR_SIZE];
+} conf;
 
 int version_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void * const userdata) {
 	xmpp_stanza_t *reply, *query, *name, *version, *text;
@@ -135,8 +138,8 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 		return 1;
 	}
 
-	replytext = (char *) malloc(strlen(from) + strlen(intext) + 2 + 4);
-	strcpy(replytext, "jid:");
+	replytext = (char *) malloc(strlen(from) + strlen(intext) + 2 + PrefixLen);
+	strcpy(replytext, Prefix);
 	strcat(replytext, from);
 	char *stop = strchr(replytext, '/');
 	if( stop != NULL ) {
@@ -157,7 +160,7 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 	redisContext *rc;
 	redisReply *rreply;
 
-	rc = redisConnectWithTimeout(redisHost, redisPort, timeout);
+	rc = redisConnectWithTimeout(conf.redisHost, conf.redisPort, conf.redisTimeout);
 
 	if (rc == NULL || rc->err) {
 		if (rc) {
@@ -167,9 +170,9 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 			printf("Connection error: can't allocate redis context\n");
 		}
 	} else {
-		int bufLen = strlen(insert_cmd) + strlen(replytext) + strlen(redisQueueInbound);
+		int bufLen = strlen(PublishCmd) + strlen(replytext) + strlen(conf.inboundQueue);
 		char *buf = malloc(bufLen);
-		snprintf(buf, bufLen, insert_cmd, redisQueueInbound, replytext);
+		snprintf(buf, bufLen, PublishCmd, conf.inboundQueue, replytext);
 // printf("%s\n", buf);
 		rreply = redisCommand(rc, buf);
 		freeReplyObject(rreply);
@@ -212,38 +215,37 @@ redisContext *connectRedis(redisContext *rc) {
 		if (rc) {
 			redisFree(rc);
 		}
-		rc = redisConnectWithTimeout(redisHost, redisPort, timeout);
+		rc = redisConnectWithTimeout(conf.redisHost, conf.redisPort, conf.redisTimeout);
 	}
 	return rc;
 }
 
-void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *msg) {
-	char *stop = strchr(msg, '\n');
-	if( stop == NULL ) {
+void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
+	char *toJid = messageSource;
+	char *messageBody = strchr(messageSource, '\n');
+
+	if( messageBody == NULL ) {
 		return;
 	}
-	*stop = 0;
-	stop++;
+	*messageBody = 0;
+	messageBody++;
 
-	if(strchr(msg, '@') == NULL || strchr(msg, '.') == NULL || strncmp("jid:", msg, 4) != 0 ) {
-		return;
+	if(strchr(toJid, '@') != NULL && strchr(toJid, '.') != NULL && strncmp(Prefix, toJid, PrefixLen) == 0 ) {
+		toJid += PrefixLen;
 	} else {
-		msg += 4;
+		return;
 	}
 
-	while(*msg == ' ') {
-		msg++;
-	}
+	SKIP_SPACE(messageBody);
+	SKIP_SPACE(toJid);
 
-	strncpy(msgBuffer, stop, MESSAGE_BUF_SIZE);
-	strncpy(toBuffer, msg, sizeof(toBuffer));
-	xmpp_stanza_t *newMsg = xmpp_message_new(ctx, "chat", toBuffer, NULL /* id */);
+	xmpp_stanza_t *newMsg = xmpp_message_new(ctx, "chat", toJid, NULL /* id */);
 	xmpp_stanza_t *body = xmpp_stanza_new(ctx);
 	xmpp_stanza_t *text = xmpp_stanza_new(ctx);
 	xmpp_stanza_set_name(body, "body");
 	xmpp_stanza_add_child(newMsg, body);
 	xmpp_stanza_add_child(body, text);
-	xmpp_stanza_set_text(text, msgBuffer);
+	xmpp_stanza_set_text(text, messageBody);
 	xmpp_stanza_release(body);
 	xmpp_stanza_release(text);
 
@@ -252,34 +254,80 @@ void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *msg) {
 }
 
 void *redisClient(void *args) {
-	xmpp_ctx_t *ctx = ((struct _threadArgs *)args)->ctx;
-	xmpp_conn_t *conn = ((struct _threadArgs *)args)->conn;
+
+	xmpp_ctx_t *ctx = ((struct ThreadArgs *)args)->ctx;
+	xmpp_conn_t *conn = ((struct ThreadArgs *)args)->conn;
 
 	redisContext *rSubscCtx = connectRedis(NULL);
-	redisContext *rCmdCtx = connectRedis(NULL);
 
-	msgBuffer = malloc(MESSAGE_BUF_SIZE);
+	int j;
+
+	char *messagBuffer = malloc(MESSAGE_BUF_SIZE);
+
 	while(1) {
 		rSubscCtx = connectRedis(rSubscCtx);
-		redisReply *reply = redisCommand(rSubscCtx, subscribe_cmd);
+		redisReply *reply = redisCommand(rSubscCtx, subscribeCmd);
 		freeReplyObject(reply);
 		while(redisGetReply(rSubscCtx, (void**)&reply) == REDIS_OK) {
 			if (reply->type == REDIS_REPLY_ARRAY) {
-				int j;
 				for (j = 0; j < reply->elements; j++) {
 					if(reply->element[j]->type == REDIS_REPLY_STRING) {
-						sendMessage(ctx, conn, reply->element[j]->str);
+						strncpy(messagBuffer, reply->element[j]->str, MESSAGE_BUF_SIZE);
+						sendMessage(ctx, conn, messagBuffer);
 					}
 				}
 			}
 			freeReplyObject(reply);
 		}
-		free(msgBuffer);
 	}
 	redisFree(rSubscCtx);
-	free(msgBuffer);
+	free(messagBuffer);
 	xmpp_conn_release(conn);
 	return NULL;
+}
+
+void readConfig(char *fname, char *botSectionName) {
+	char redisSectionName[256];
+	ini_t *config = ini_load(fname);
+
+	if (config == NULL) {
+		error(1, errno, "ini_load fail");
+	}
+
+	ini_read_strn(config, botSectionName, "redis", redisSectionName, sizeof(redisSectionName), NULL);
+
+	ini_read_strn(config, botSectionName, "jid", conf.jid, DEFAUL_STR_SIZE, NULL);
+	ini_read_strn(config, botSectionName, "password", conf.pwd, DEFAUL_STR_SIZE, NULL);
+
+	ini_read_strn(config, redisSectionName, "host", conf.redisHost, DEFAUL_STR_SIZE, NULL);
+	ini_read_uint32(config, redisSectionName, "port", &conf.redisPort, 0);
+
+	ini_read_strn(config, botSectionName, "inbound", conf.inboundQueue, DEFAUL_STR_SIZE, NULL);
+	ini_read_strn(config, botSectionName, "outbound", conf.outboundQueue, DEFAUL_STR_SIZE, NULL);
+
+	ini_free(config);
+
+}
+
+void validateConfig() {
+	if(strlen(conf.jid)==0) {
+		error(1, errno, "Invalid config. Empty xmpp/jid");
+	}
+	if(strlen(conf.pwd)==0) {
+		error(1, errno, "Invalid config. Empty xmpp/pass");
+	}
+	if(strlen(conf.redisHost)==0) {
+		error(1, errno, "Invalid config. Empty redis/host");
+	}
+	if(conf.redisPort == 0) {
+		error(1, errno, "Invalid config. Empty redis/port");
+	}
+	if(strlen(conf.inboundQueue)==0) {
+		error(1, errno, "Invalid config. Empty queue/inbound");
+	}
+	if(strlen(conf.outboundQueue)==0) {
+		error(1, errno, "Invalid config. Empty queue/outbound");
+	}
 }
 
 int main(int argc, char **argv) {
@@ -288,54 +336,19 @@ int main(int argc, char **argv) {
 	xmpp_conn_t *connClone;
 	xmpp_log_t *log;
 	pthread_t thread;
-	threadArgs args;
-	char redis[256];
-	char jid[100] = { 0 };
-	char pass[100] = { 0 };
+
+	struct ThreadArgs args;
+	conf.redisTimeout.tv_sec = 10;
+	conf.redisTimeout.tv_usec = 500000;
 
 	if(argc != 3) {
 		error(1, errno, "Usage:\nxmppredis section config_file\n");
 	}
 
-	ini_t *conf = ini_load(argv[2]);
-	if (conf == NULL) {
-		error(1, errno, "ini_load fail");
-	}
+	readConfig(argv[2], argv[1]);
+	validateConfig();
 
-	ini_read_strn(conf, argv[1], "redis", redis, sizeof(redis), NULL);
-
-	ini_read_strn(conf, argv[1], "jid", jid, sizeof(jid), NULL);
-	ini_read_strn(conf, argv[1], "password", pass, sizeof(pass), NULL);
-
-	ini_read_strn(conf, redis, "host", redisHost, sizeof(redisHost), NULL);
-	ini_read_uint32(conf, redis, "port", &redisPort, 0);
-
-	ini_read_strn(conf, argv[1], "inbound", redisQueueInbound, sizeof(redisQueueInbound), NULL);
-	ini_read_strn(conf, argv[1], "outbound", redisQueueOutbound, sizeof(redisQueueOutbound), NULL);
-
-	ini_free(conf);
-
-	if(strlen(jid)==0) {
-		error(1, errno, "Invalid config. Empty xmpp/jid");
-	}
-	if(strlen(pass)==0) {
-		error(1, errno, "Invalid config. Empty xmpp/pass");
-	}
-	if(strlen(redisHost)==0) {
-		error(1, errno, "Invalid config. Empty redis/host");
-	}
-	if(redisPort == 0) {
-		error(1, errno, "Invalid config. Empty redis/port");
-	}
-	if(strlen(redisQueueInbound)==0) {
-		error(1, errno, "Invalid config. Empty queue/inbound");
-	}
-	if(strlen(redisQueueOutbound)==0) {
-		error(1, errno, "Invalid config. Empty queue/outbound");
-	}
-
-	snprintf(get_cmd, sizeof(get_cmd), get_cmd_tmpl, redisQueueOutbound);
-	snprintf(subscribe_cmd, sizeof(subscribe_cmd), subscribe_cmd_tmpl, redisQueueOutbound);
+	snprintf(subscribeCmd, sizeof(subscribeCmd), SubscribeCmdTemplate, conf.outboundQueue);
 
 	xmpp_initialize();
 
@@ -345,8 +358,8 @@ int main(int argc, char **argv) {
 	conn = xmpp_conn_new(ctx);
 //	xmpp_conn_set_keepalive(conn, KA_TIMEOUT, KA_INTERVAL);
 
-	xmpp_conn_set_jid(conn, jid);
-	xmpp_conn_set_pass(conn, pass);
+	xmpp_conn_set_jid(conn, conf.jid);
+	xmpp_conn_set_pass(conn, conf.pwd);
 
 	xmpp_connect_client(conn, NULL, 0, conn_handler, ctx);
 
