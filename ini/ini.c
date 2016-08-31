@@ -1,6 +1,6 @@
 /*
- * Description: simple read only ini parser
- *     History: yang@haipo.me, 2013/06/13, create
+
+Copyright (c) 2000-2011 by Haipo Yang <yang@haipo.me>
 
 MIT License
 
@@ -23,10 +23,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
+*/
 
+/*
+ * Description: simple read only ini parser
+ *   History: yang@haipo.me, 2013/06/13, create
  */
-
-
 # undef  _GNU_SOURCE
 # define _GNU_SOURCE
 

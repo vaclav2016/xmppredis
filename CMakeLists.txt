@@ -7,5 +7,7 @@ find_package (Hiredis REQUIRED)
 INCLUDE(CheckIncludeFile)
 CHECK_INCLUDE_FILE(strophe.h HAVE_STROPHE)
 
-ADD_EXECUTABLE(xmppredis xmppredis.c ini.c)
-TARGET_LINK_LIBRARIES(xmppredis strophe hiredis ${CMAKE_THREAD_LIBS_INIT})
+include_directories ("${PROJECT_SOURCE_DIR}/ini")
+
+add_subdirectory(ini)
+add_subdirectory(xmppredis)

@@ -1,6 +1,6 @@
 /*
- * Description: simple read only ini parser
- *     History: yang@haipo.me, 2013/06/13, create
+
+Copyright (c) 2000-2011 by Haipo Yang <yang@haipo.me>
 
 MIT License
 
@@ -23,9 +23,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
+*/
 
-
+/*
+ * Description: simple read only ini parser
+ *   History: yang@haipo.me, 2013/06/13, create
  */
+
+#ifndef _INI_H_
+#define _INI_H_
 
 # pragma once
 
@@ -173,3 +179,4 @@ int ini_read_bool(ini_t *handler,
 /* Free a ini config handler */
 void ini_free(ini_t *handler);
 
+#endif
