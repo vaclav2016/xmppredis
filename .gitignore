@@ -39,5 +39,5 @@ Makefile
 cmake_install.cmake
 
 # Builded binary
-xmppredis
+xmppredis/xmppredis
 xmppredis.conf
