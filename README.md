@@ -100,6 +100,10 @@ You need cmake and make to build.
     $ cmake ./
     $ make
 
+## Conacts
+
+You can write to me via jabber: vaclav2016@jabber.cz
+
 ## Licensing
 
 Code is licensed with different License:
