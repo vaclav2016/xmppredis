@@ -111,9 +111,9 @@ You need cmake and make to build.
     $ cmake ./
     $ make
 
-## Conacts
+## Contacts
 
-You can write to me via jabber: vaclav2016@jabber.cz
+Please, fill free contact to me via jabber: vaclav2016@jabber.cz
 
 ## Licensing
 
