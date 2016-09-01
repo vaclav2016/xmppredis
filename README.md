@@ -82,14 +82,14 @@ So, multiple bot can have reference to the same REDIS server.
 
 ## TODO
 
-I have ideas to growthup this tool, but I havn't job. So, if You want help this project, You can spend few satoshi (or may be bitcoins 8-):
+I have ideas to growthup this tool, but I havn't job. So, if You want help this project, You can spend few satoshi (or may be bitcoins):
 
-* To start Skype: 1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3
-* To start Facebook: 1DQWKuG6kUpkzkYX52k6VccbPoP3XSYxYC
+* To start Skype bridge: 1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3
+* To start Facebook bridge: 1DQWKuG6kUpkzkYX52k6VccbPoP3XSYxYC
 
 Code will be shared here with the same license.
 
-If You think about other social platform - please, contact to me via jabber: vaclav2016@jabber.cz
+If You think about other social platform or protocol - please, contact to me via jabber: vaclav2016@jabber.cz
 
 ## Dependencies and Build
 
