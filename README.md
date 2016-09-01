@@ -80,6 +80,15 @@ String 'redis=localhostRedis' has the same reference - it is mean to take REDIS 
 
 So, multiple bot can have reference to the same REDIS server.
 
+## TODO
+
+I have ideas to growthup this tool, but I havn't job. So, if You want help this project, You can spend few satoshi (or may be bitcoins 8-):
+
+* To start Skype <-> REDIS gateway: btc://1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3
+* To start Facebook <-> REDIS gateway: 1DQWKuG6kUpkzkYX52k6VccbPoP3XSYxYC
+
+If You think about other social platform - please, contact to me via jabber: vaclav2016@jabber.cz
+
 ## Dependencies and Build
 
     hiredis
