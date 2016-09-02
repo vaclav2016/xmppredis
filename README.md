@@ -88,12 +88,12 @@ String `redis=localhostRedis` has the same reference - it is mean to take REDIS 
 
 So, multiple bot can have reference to the same REDIS server.
 
-## TODO
+## Donate to growthup
 
-I have ideas to growthup this tool, but I havn't job. So, if You want help this project, You can spend few satoshi (or may be bitcoins):
+I maintain this project in my free time, if it helped you please support my work via Bitcoins, thanks a lot!
 
-* To start **Skype** bridge, bitcoin-wallet is: 1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3
-* To start **Facebook** bridge, bitcoin-wallet is: 1DQWKuG6kUpkzkYX52k6VccbPoP3XSYxYC
+* To start **Skype** bridge, bitcoin-wallet is: **1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3**
+* To start **Facebook** bridge, bitcoin-wallet is: **1DQWKuG6kUpkzkYX52k6VccbPoP3XSYxYC**
 
 Code will be shared here with the same license.
 
