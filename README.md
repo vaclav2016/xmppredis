@@ -19,14 +19,14 @@ Message format is simple text:
     jid:somebody@jabberserver.org
     message text
 
-For inbound queue - it will be sender jid, for outbound queue - it will be receiver jid.
+For inbound queue - it will be sender JID, for outbound queue - it will be receiver JID.
 
 ## How it works ? Example in PHP
 
 It works just via REDIS-commands PUBLISH and SUBSCRIBE:
 http://redis.io/commands/publish
 
-This example PHP-script is try to send message to jid somebody@a35a17e05e4z6vxdl.onion:
+This example PHP-script is try to send message to JID somebody@a35a17e05e4z6vxdl.onion:
 
     <?php
 
@@ -54,10 +54,11 @@ So, if You want receive jabber-messages via xmppredis - You must execute 'SUBSCR
 
 This project allow build authrization scheme for Your site without keeping password into DB:
 
-1. Customer of Your site enter his jabber jid on Web-form.
-2. Script receive jid, generate random password, store jid/password at user-session and send password to Customer jid. When I say "user-session", I dont mean 'cookies'.
+1. Customer of Your site enter his jabber JID on Web-form.
+2. Script receive JID, generate random password, store pair JID/password at user-session and send password to Customer's JID. When I say "user-session", I dont mean 'cookies'.
 3. Customer receive password and enter it on Web-form.
 4. Script receive password from Web-form and check him with session-stored password.
+5. In case when password is right, Your Customer ID (login) is entered JID.
 
 So, nobody can steal your passwords database. Also, in this case, target for bruteforce attacks will be Customer's jabber service instead Your Site.
 
