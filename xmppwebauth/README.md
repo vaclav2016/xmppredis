@@ -1,8 +1,10 @@
 # xmppwebauth
 
-* login.php - sample login page
-* page.php - page which show different content for anonymous/authrized users
-* logout.php - logout page
+This sunproject demostrate how to have web authorization without keeping password into database.
+
+* `login.php` - sample login page
+* `page.php` - page which show different content for anonymous/authrized users
+* `logout.php` - logout page
 
 ## Authorization scheme for Web Site without keeping password into database
 
@@ -14,4 +16,6 @@ This project allow build authrization scheme for Your site without keeping passw
 4. Script receive password from Web-form and check with session-stored password.
 5. In case when password is right, Your Customer ID (login) is entered JID.
 
-So, nobody can steal your passwords database. Also, in this case, target for bruteforce attacks will be Customer's jabber service instead Your Site.
+So, nobody can steal your passwords database.
+
+Also, in this case, target for bruteforce attacks will be Customer's jabber service instead Your Site.
