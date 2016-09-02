@@ -31,6 +31,10 @@ So, nobody can steal your passwords database.
 
 Also, in this case, target for bruteforce attacks will be customer's jabber service instead your site.
 
+## Contacts
+
+Please, fill free contact to me via jabber: vaclav2016@jabber.cz
+
 ## Licensing
 
 (с) 2016 Copyright by vaclav2016, https://github.com/vaclav2016/xmppredis/
