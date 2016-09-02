@@ -12,7 +12,7 @@ What use case for this project?
 
 In this cases, You just a place message to REDIS queue.
 
-Also, remember - queue have more then one subscriber, so You can play with subscriber combination.
+Also, remember - queue can have more then one subscriber, so You can play with subscribers combination.
 
 Message format is simple text:
 
