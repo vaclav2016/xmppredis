@@ -57,7 +57,7 @@ This project allow build authrization scheme for Your site without keeping passw
 1. Customer of Your site enter his jabber jid.
 2. Script receive jid, generate random password, store at user-session and send it to entered jid. When I say "user-session", I dont mean 'cookies'.
 3. Customer receive password and enter it.
-4. Script receive password from Web-from and check his with session-stored password.
+4. Script receive password from Web-from and check him with session-stored password.
 
 So, nobody can steal your passwords database.
 
