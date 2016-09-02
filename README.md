@@ -59,7 +59,7 @@ This project allow build authrization scheme for Your site without keeping passw
 3. Customer receive password and enter it.
 4. Script receive password from Web-from and check him with session-stored password.
 
-So, nobody can steal your passwords database.
+So, nobody can steal your passwords database. Also, in this case, target for bruteforce attacks will be Customer's jabber service instead Your Site.
 
 ## Xmppredis run and configuration
 
