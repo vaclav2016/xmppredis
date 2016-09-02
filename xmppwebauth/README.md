@@ -13,10 +13,13 @@ This subproject demostrate how to have web authorization without keeping passwor
 This project allow build authrization scheme for Your site without keeping password into DB:
 
 1. Customer of Your site enter his jabber JID on Web-form.
+![Authorization scheme for Web Site without keeping password into database Step 1](step1.png)
 2. Script receive JID, generate random password, store pair JID/password at user-session and send password to Customer's JID. When I say "user-session", I dont mean 'cookies'.
 3. Customer receive password and enter him on Web-form.
+![Authorization scheme for Web Site without keeping password into database Step 2](step2.png)
 4. Script receive password from Web-form and check with session-stored password.
 5. In case when password is right, Your Customer ID (login) is entered JID.
+![Authorization scheme for Web Site without keeping password into database Step 3](step3.png)
 
 So, nobody can steal your passwords database.
 
