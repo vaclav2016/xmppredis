@@ -1,6 +1,6 @@
 # XMPP to REDIS bridge
 
-Here is implementation XMPP/REDIS bridge in C. xmppredis will receive/send messages between Jabber and REDIS-queue's (or channel?). Sorry, I am novice in C and REDIS, so I use word from Java Enterprise world - Queue.
+Here is implementation XMPP/[REDIS](http://redis.io/) bridge in C. xmppredis will receive/send messages between Jabber and [REDIS](http://redis.io/)-queue's (or channel?). Sorry, I am novice in C and [REDIS](http://redis.io/), so I use word from Java Enterprise world - Queue.
 
 NOTE: For me, this project looks like in a fine state. BUT: This project is not tested for production.
 
@@ -10,7 +10,7 @@ What use case for this project?
 * For hardware/languages without rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is require strong crypto-protection. Another example: have too many instances of Java Runtime Environment (JRE) is not good idea for C.H.I.P (for me it is a nice ARM-based hardware with Debian OS, 512MB RAM, WiFi and $9 price).
 * Building bridges between social platforms or internet protocols (jabber <-> email, skype <-> jabber etc). This bridges will be usefull for business (notificaion from frontend/backoffice to backoffice) or for keeping Your privacy (in case, when You place Your bridge into TOR).
 
-In this cases, You just a place message to REDIS queue.
+In this cases, You just a place message to [REDIS](http://redis.io/) queue.
 
 Also, remember - queue can have more then one subscriber, so You can play with subscribers combination.
 
@@ -43,7 +43,7 @@ This example PHP-script is try to send message to JID somebody@a35a17e05e4z6vxdl
 
 How act this example?
 
-1. PHP push message to queue `out_testbot` in REDIS
+1. PHP push message to queue `out_testbot` in [REDIS](http://redis.io/)
 2. xmppredis, as `out_testbot` queue subscriber, pickup message from queue
 3. xmppredis parse and send message to somebody@a35a17e05e4z6vxdl.onion
 
@@ -83,9 +83,9 @@ So, when we run
 
 we mean section `[testbot]` with bot configuration.
 
-String `redis=localhostRedis` has the same reference - it is mean to take REDIS host/port from section `[localhostRedis]`.
+String `redis=localhostRedis` has the same reference - it is mean to take [REDIS](http://redis.io/) host/port from section `[localhostRedis]`.
 
-So, multiple bot can have reference to the same REDIS server.
+So, multiple bot can have reference to the same [REDIS](http://redis.io/) server.
 
 ## Donate to growthup
 
