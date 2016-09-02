@@ -32,8 +32,12 @@ DEALINGS IN THE SOFTWARE.
 #include <error.h>
 #include <errno.h>
 #include <pthread.h>
+#include "curl-client.h"
 #include <hiredis/hiredis.h>
 #include "ini.h"
 
 int main(int argc, char **argv) {
+	char *page = url_get("http://www.anarchy.org.ua/");
+	printf(page);
+	free(page);
 }
