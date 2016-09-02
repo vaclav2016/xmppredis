@@ -3,8 +3,8 @@
 This sunproject demostrate how to have web authorization without keeping password into database.
 
 * [login.php](login.php) - sample login page
-* `page.php` - page which show different content for anonymous/authrized users
-* `logout.php` - logout page
+* [page.php](page.php) - protected page, which show different content for anonymous/authrized users
+* [logout.php](logout.php) - logout page
 
 ## Authorization scheme for Web Site without keeping password into database
 
