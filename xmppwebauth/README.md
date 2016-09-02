@@ -6,7 +6,7 @@ This subproject demostrate how to have web authorization without keeping passwor
 * [page.php](page.php) - protected page, which show different content for anonymous/authrized users
 * [logout.php](logout.php) - logout page
 
-Require runned [xmppredis](..) !
+**Require runned [XmppRedis](..) !**
 
 ## Authorization scheme for Web Site without keeping password into database
 
