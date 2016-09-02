@@ -30,3 +30,12 @@ This project allow build authrization scheme for your site without keeping passw
 So, nobody can steal your passwords database.
 
 Also, in this case, target for bruteforce attacks will be customer's jabber service instead your site.
+
+## Licensing
+
+(с) 2016 Copyright by vaclav2016, https://github.com/vaclav2016/xmppredis/
+
+Code is licensed under the Boost License, Version 1.0. See each
+repository's licensing information for details and exceptions.
+
+http://www.boost.org/LICENSE_1_0.txt
