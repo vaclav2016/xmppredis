@@ -44,15 +44,15 @@ This example PHP-script is try to send message to JID somebody@a35a17e05e4z6vxdl
 
 How act this example?
 
-1. PHP push message to queue 'out_testbot' in REDIS
-2. xmppredis, as 'out_testbot' queue subscriber, pickup message from queue
+1. PHP push message to queue `out_testbot` in REDIS
+2. xmppredis, as `out_testbot` queue subscriber, pickup message from queue
 3. xmppredis parse and send message to somebody@a35a17e05e4z6vxdl.onion
 
-So, if You want receive jabber-messages via xmppredis - You must execute 'SUBSCRIBE in_testbot' in your application.
+So, if You want receive jabber-messages via xmppredis - You must execute `SUBSCRIBE in_testbot` in your application.
 
-## xmppwebauth
+## XmppWebAuth
 
-Implements authorization via jabber. See xmppwebauth/README.md for details.
+Implements authorization via jabber without keeping password into database. See [description](xmppwebauth/README.md) for details.
 
 ## Xmppredis run and configuration
 
@@ -60,8 +60,8 @@ You can run it with:
 
     $ xmppredis testbot xmppredis.conf
 
-Where testbot - is a section into .conf file with bot profile.
-Lets check xmppredis.conf:
+Where `testbot` - is a section into .conf file with bot profile.
+Lets check **xmppredis.conf**:
 
     [localhostRedis]
 
@@ -82,9 +82,9 @@ So, when we run
 
     $ xmppredis testbot xmppredis.conf
 
-we mean section [testbot] with bot configuration.
+we mean section `[testbot]` with bot configuration.
 
-String 'redis=localhostRedis' has the same reference - it is mean to take REDIS host/port from section [localhostRedis].
+String `redis=localhostRedis` has the same reference - it is mean to take REDIS host/port from section `[localhostRedis]`.
 
 So, multiple bot can have reference to the same REDIS server.
 
@@ -92,8 +92,8 @@ So, multiple bot can have reference to the same REDIS server.
 
 I have ideas to growthup this tool, but I havn't job. So, if You want help this project, You can spend few satoshi (or may be bitcoins):
 
-* To start Skype bridge, bitcoin-wallet is: 1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3
-* To start Facebook bridge, bitcoin-wallet is: 1DQWKuG6kUpkzkYX52k6VccbPoP3XSYxYC
+* To start **Skype** bridge, bitcoin-wallet is: 1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3
+* To start **Facebook** bridge, bitcoin-wallet is: 1DQWKuG6kUpkzkYX52k6VccbPoP3XSYxYC
 
 Code will be shared here with the same license.
 
