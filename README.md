@@ -1,14 +1,14 @@
 # XMPP to REDIS bridge
 
-Here is implementation XMPP/[REDIS](http://redis.io/) bridge in C. xmppredis will receive/send messages between Jabber and [REDIS](http://redis.io/)-queue's (or channel?). Sorry, I am novice in C and [REDIS](http://redis.io/), so I use word from Java Enterprise world - Queue.
+Here is implementation XMPP / [REDIS](http://redis.io/) bridge in C. xmppredis will receive/send messages between Jabber and [REDIS](http://redis.io/)-queue's (or channel?). Sorry, I am novice in C and [REDIS](http://redis.io/), so I use word from Java Enterprise world - Queue.
 
-NOTE: For me, this project looks like in a fine state. BUT: This project is not tested for production.
+**NOTE:** For me, this project looks like in a fine state. BUT: This project is not tested for production.
 
 What use case for this project?
 
 * For hardware/languages without support asynchronous execution (like multithreading/pthreads or something like a Java JMS) - PHP language, Arduino hardware etc.
-* For hardware/languages without rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is require strong crypto-protection. Another example: have too many instances of Java Runtime Environment (JRE) is not good idea for C.H.I.P (for me it is a nice ARM-based hardware with Debian OS, 512MB RAM, WiFi and $9 price).
-* Building bridges between social platforms or internet protocols (jabber <-> email, skype <-> jabber etc). This bridges will be usefull for business (notificaion from frontend/backoffice to backoffice) or for keeping Your privacy (in case, when You place Your bridge into TOR).
+* For hardware/languages without rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is require strong crypto-protection. Another example: have too many instances of Java Runtime Environment (JRE) is not good idea for [C.H.I.P.](http://getchip.com/) (for me it is a nice ARM-based hardware with Debian OS, 512MB RAM, WiFi and $9 price).
+* Building bridges between social platforms or internet protocols (jabber <-> email, skype <-> jabber etc). This bridges will be usefull for business (notificaion from frontend/backoffice to backoffice) or for keeping Your privacy (in case, when You place Your bridge into [TOR](https://www.torproject.org/)).
 
 In this cases, You just a place message to [REDIS](http://redis.io/) queue.
 
