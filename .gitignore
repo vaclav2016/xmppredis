@@ -33,10 +33,10 @@
 *.su
 
 # CMake files
-CMakeCache.txt
-CMakeFiles/*
-Makefile
-cmake_install.cmake
+xmppredis/CMakeCache.txt
+xmppredis/CMakeFiles/*
+xmppredis/Makefile
+xmppredis/cmake_install.cmake
 
 # Builded binary
 xmppredis/xmppredis
