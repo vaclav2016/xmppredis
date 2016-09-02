@@ -1,8 +1,8 @@
-# xmppwebauth
+# XmppWebAuth
 
 This sunproject demostrate how to have web authorization without keeping password into database.
 
-* `login.php` - sample login page
+* [login.php](login.php) - sample login page
 * `page.php` - page which show different content for anonymous/authrized users
 * `logout.php` - logout page
 
