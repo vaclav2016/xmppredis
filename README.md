@@ -52,7 +52,7 @@ So, if You want receive jabber-messages via xmppredis - You must execute `SUBSCR
 
 ## XmppWebAuth
 
-Implements authorization via jabber without keeping password into database. See [description](xmppwebauth/README.md) for details.
+Implements authorization via jabber without keeping password into database. See [description](xmppwebauth/) for details.
 
 ## Xmppredis run and configuration
 
