@@ -37,7 +37,7 @@ DEALINGS IN THE SOFTWARE.
 #include "ini.h"
 
 int main(int argc, char **argv) {
-	char *page = url_get("http://www.anarchy.org.ua/");
+	char *page = url_get("http://google.com/");
 	printf(page);
 	free(page);
 }
