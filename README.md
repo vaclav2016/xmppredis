@@ -55,8 +55,8 @@ So, if You want receive jabber-messages via xmppredis - You must execute 'SUBSCR
 This project allow build authrization scheme for Your site without keeping password into DB.
 
 1. Customer of Your site enter his jabber jid.
-2. Script receive jid, generate random password, story at user-session and send it to entered jid.
-3. User receive password and enter it.
+2. Script receive jid, generate random password, store at user-session and send it to entered jid. When I say "user-session", I dont mean 'cookies'.
+3. Customer receive password and enter it.
 4. Script receive password from Web-from and check his with session-stored password.
 
 So, nobody can steal your passwords database.
