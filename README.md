@@ -5,9 +5,12 @@ Here is implementation XMPP/REDIS bridge in C. xmppredis will receive/send messa
 NOTE: This project is not tested for production.
 
 What use case for this project?
-For example, this project need if You want send messages from php-page to somebody via Jabber. In this case, You just a place message to REDIS queue.
 
-Another use case - building bridges between social platforms (email etc).
+* For platform/languages without async tools (like multithreading or something like a Java JMS) - php etc.
+* For platform/languages, which havn't rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is strong require crypto-protection.
+* Building bridges between social platforms (email etc)
+
+In this cases, You just a place message to REDIS queue.
 
 Message format is simple text:
 
