@@ -23,7 +23,7 @@ For inbound queue - it will be sender JID, for outbound queue - it will be recei
 
 ## How it works ? Example in PHP
 
-It works just via REDIS-commands [PUBLISH](http://redis.io/commands/publish) and [SUBSCRIBE](http://redis.io/commands/subscribe):
+It works just via [REDIS](http://redis.io/)-commands [PUBLISH](http://redis.io/commands/publish) and [SUBSCRIBE](http://redis.io/commands/subscribe):
 
 This example PHP-script is try to send message to JID somebody@a35a17e05e4z6vxdl.onion:
 
@@ -85,7 +85,7 @@ we mean section `[testbot]` with bot configuration.
 
 String `redis=localhostRedis` has the same reference - it is mean to take [REDIS](http://redis.io/) host/port from section `[localhostRedis]`.
 
-So, multiple bot can have reference to the same [REDIS](http://redis.io/) server.
+So, multiple bot can have reference to the same [REDIS](http://redis.io/)-server.
 
 ## Donate to growthup
 
