@@ -6,7 +6,7 @@ NOTE: This project is not tested for production.
 
 What use case for this project?
 
-* For platform/languages without support asynchronios execution (like multithreading/pthreads or something like a Java JMS) - PHP etc.
+* For platform/languages without support asynchronios execution (like multithreading/pthreads or something like a Java JMS) - PHP languge, Arduino platform etc.
 * For platform/languages, which havn't rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is strong require crypto-protection.
 * Building bridges between social platforms (email etc)
 
