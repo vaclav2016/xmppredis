@@ -23,7 +23,7 @@ If You think about other social platform or protocol - please, contact to me via
 
 ## Licensing
 
-(с) 2016 Copyright by vaclav2016, https://github.com/vaclav2016/JCGA/
+(с) 2016 Copyright by vaclav2016, https://github.com/vaclav2016/xmppredis/
 
 Code is licensed under the Boost License, Version 1.0. See each
 repository's licensing information for details and exceptions.
