@@ -1,8 +1,8 @@
 # xmppwebauth
 
-login.php - sample login page
-page.php - page which show different content for anonymous/authrized users
-logout.php - logout page
+* login.php - sample login page
+* page.php - page which show different content for anonymous/authrized users
+* logout.php - logout page
 
 ## Authorization scheme for Web Site without keeping password into database
 
