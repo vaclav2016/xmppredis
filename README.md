@@ -8,7 +8,7 @@ What use case for this project?
 
 * For hardware/languages without support asynchronous execution (like multithreading/pthreads or something like a Java JMS) - PHP language, Arduino hardware etc.
 * For hardware/languages without rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is require strong crypto-protection. Another example: have too many instances of Java Runtime Environment (JRE) is not good idea for C.H.I.P (for me it is a nice ARM-based hardware with Debian OS, 512MB RAM, WiFi and $9 price).
-* Building bridges between social platforms or internet protocols (jabber <-> email, skype <-> jabber etc). This bridges will be usefull for business or for keeping Your privacy (in case, when You place Your bridge into TOR).
+* Building bridges between social platforms or internet protocols (jabber <-> email, skype <-> jabber etc). This bridges will be usefull for business (notificaion from frontend/backoffice to backoffice) or for keeping Your privacy (in case, when You place Your bridge into TOR).
 
 In this cases, You just a place message to REDIS queue.
 
@@ -50,6 +50,16 @@ How act this example?
 
 So, if You want receive jabber-messages via xmppredis - You must execute 'SUBSCRIBE in_testbot' in your application.
 
+## Authorization scheme for Web Site without keeping password into database
+
+This project allow build authrization scheme for Your site without keeping password into DB.
+
+1. Customer of Your site enter his jabber jid.
+2. Script receive jid, generate random password, story at user-session and send it to entered jid.
+3. User receive password and enter it.
+4. Script receive password from Web-from and check his with session-stored password.
+
+So, nobody can steal your passwords database.
 
 ## Xmppredis run and configuration
 
