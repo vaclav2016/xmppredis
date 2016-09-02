@@ -1,6 +1,6 @@
 # XMPP to REDIS bridge
 
-Here is implementation XMPP / [REDIS](http://redis.io/) bridge in C. XmppRedis will receive/send messages between Jabber and [REDIS](http://redis.io/)-queue's (or channel?). Sorry, I am novice in C and [REDIS](http://redis.io/), so I use word from Java Enterprise world - Queue.
+Here is implementation [XMPP](http://xmpp.org/) / [REDIS](http://redis.io/) bridge in C. XmppRedis will receive/send messages between Jabber and [REDIS](http://redis.io/)-queue's (or channel?). Sorry, I am novice in C and [REDIS](http://redis.io/), so I use word from Java Enterprise world - Queue.
 
 **NOTE:** For me, this project looks like in a fine state. BUT: This project is not tested for production.
 
