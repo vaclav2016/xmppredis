@@ -31,6 +31,12 @@ So, nobody can steal your passwords database.
 
 Also, in this case, target for bruteforce attacks will be customer's jabber service instead your site.
 
+## Donate
+
+I maintain this project in my free time, if it helped you please support my work via Bitcoins, thanks a lot! Bitcoin-wallet 
+
+If You think about other features - please, contact to me via jabber: vaclav2016@jabber.cz
+
 ## Contacts
 
 Please, fill free contact to me via jabber: vaclav2016@jabber.cz
