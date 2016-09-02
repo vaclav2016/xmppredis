@@ -11,3 +11,9 @@ include_directories ("${PROJECT_SOURCE_DIR}/ini")
 
 add_subdirectory(ini)
 add_subdirectory(xmppredis)
+
+#include(CPack)
+#install(TARGETS xmppredis)
+
+#set(CMAKE_INSTALL_PREFIX /usr)
+#set(CPACK_BINARY_DEB ON)
