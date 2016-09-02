@@ -7,7 +7,7 @@ NOTE: For me, this project looks like in a fine state. BUT: This project is not 
 What use case for this project?
 
 * For hardware/languages without support asynchronous execution (like multithreading/pthreads or something like a Java JMS) - PHP language, Arduino hardware etc.
-* For hardware/languages, which havn't rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is strong require crypto-protection.
+* For hardware/languages, which is without rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is strong require crypto-protection.
 * Building bridges between social platforms (email etc)
 
 In this cases, You just a place message to REDIS queue.
