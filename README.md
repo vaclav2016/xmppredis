@@ -23,8 +23,7 @@ For inbound queue - it will be sender JID, for outbound queue - it will be recei
 
 ## How it works ? Example in PHP
 
-It works just via REDIS-commands PUBLISH and SUBSCRIBE:
-http://redis.io/commands/publish
+It works just via REDIS-commands [PUBLISH](http://redis.io/commands/publish) and [SUBSCRIBE](http://redis.io/commands/subscribe):
 
 This example PHP-script is try to send message to JID somebody@a35a17e05e4z6vxdl.onion:
 
