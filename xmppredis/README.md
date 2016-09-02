@@ -111,7 +111,6 @@ Also, may be You want install a PHP-extension:
 
 You need cmake and make to build.
 
-    $ cd xmppredis
     $ cmake ./
     $ make
 
