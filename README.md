@@ -7,7 +7,7 @@ NOTE: For me, this project looks like in a fine state. BUT: This project is not 
 What use case for this project?
 
 * For hardware/languages without support asynchronous execution (like multithreading/pthreads or something like a Java JMS) - PHP language, Arduino hardware etc.
-* For hardware/languages without rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is require strong crypto-protection. Another example: have many instances of java environment is not good idea for C.H.I.P (nice ARM-based hardware with debian OS, 512MB RAM and $9 price).
+* For hardware/languages without rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is require strong crypto-protection. Another example: have too many instances of Java-environment is not good idea for C.H.I.P (for me it is a nice ARM-based hardware with debian OS, 512MB RAM and $9 price).
 * Building bridges between social platforms or internet protocols (jabber <-> email, skype <-> jabber etc). This bridges will be usefull for business or for keeping Your privacy (in case, when You place Your bridge into TOR).
 
 In this cases, You just a place message to REDIS queue.
