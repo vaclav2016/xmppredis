@@ -38,6 +38,13 @@ xmppredis/CMakeFiles/*
 xmppredis/Makefile
 xmppredis/cmake_install.cmake
 
+vkredis/CMakeCache.txt
+vkredis/CMakeFiles/*
+vkredis/Makefile
+vkredis/cmake_install.cmake
+
 # Builded binary
 xmppredis/xmppredis
 xmppredis/xmppredis.conf
+vkredis/xmppredis
+vkredis/xmppredis.conf
