@@ -1,6 +1,6 @@
 # XmppWebAuth
 
-This sunproject demostrate how to have web authorization without keeping password into database.
+This subproject demostrate how to have web authorization without keeping password into database.
 
 * [login.php](login.php) - sample login page
 * [page.php](page.php) - protected page, which show different content for anonymous/authrized users
