@@ -30,3 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #include"curl-client.h"
 #include"vk.h"
 
+char *vk_auth(char *login, char *pwd, char *appId) {
+}
+
+

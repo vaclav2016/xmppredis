@@ -34,7 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <errno.h>
 #include <pthread.h>
 #include <hiredis/hiredis.h>
-#include "ini.h"
+#include <ini/ini.h>
 
 #define MESSAGE_BUF_SIZE 1024*64
 

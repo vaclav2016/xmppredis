@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #define _VK_H_
 
 
-
+extern char *vk_auth(char *login, char *pwd, char *appId);
 
 
 #endif
