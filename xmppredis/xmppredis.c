@@ -118,8 +118,6 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 	intext = xmpp_stanza_get_text(xmpp_stanza_get_child_by_name(stanza, "body"));
 	const char *from = xmpp_stanza_get_from(stanza);
 
-	printf("Incoming message from %s: %s\n", from, intext);
-
 	if( strlen(intext) > 4*1024) {
 		body = xmpp_stanza_new(ctx);
 		xmpp_stanza_set_name(body, "body");
@@ -147,6 +145,7 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 	if( stop != NULL ) {
 		*stop = 0;
 	}
+	printf("\033[35mReceive from \033[32m%s\033[37m\n", replytext);
 	strcat(replytext, "\n");
 	strcat(replytext, intext);
 	xmpp_free(ctx, intext);
@@ -164,14 +163,7 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 
 	rc = redisConnectWithTimeout(conf.redisHost, conf.redisPort, conf.redisTimeout);
 
-	if (rc == NULL || rc->err) {
-		if (rc) {
-			printf("Connection error: %s\n", rc->errstr);
-			redisFree(rc);
-		} else {
-			printf("Connection error: can't allocate redis context\n");
-		}
-	} else {
+	if (rc != NULL && !rc->err) {
 		int bufLen = strlen(PublishCmd) + strlen(replytext) + strlen(conf.inboundQueue);
 		char *buf = malloc(bufLen);
 		snprintf(buf, bufLen, PublishCmd, conf.inboundQueue, replytext);
@@ -195,7 +187,7 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 
 	if (status == XMPP_CONN_CONNECT) {
 		xmpp_stanza_t* pres;
-		fprintf(stderr, "DEBUG: connected\n");
+		fprintf(stderr, "\033[32mConnected to JABBER-server\033[37m\n");
 		xmpp_handler_add(conn,version_handler, "jabber:iq:version", "iq", NULL, ctx);
 		xmpp_handler_add(conn,message_handler, NULL, "message", NULL, ctx);
 
@@ -204,8 +196,8 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 		xmpp_send(conn, pres);
 		xmpp_stanza_release(pres);
 	} else if (status == XMPP_CONN_DISCONNECT || status == XMPP_CONN_FAIL){
+		fprintf(stderr, "\033[31mDisconnect from JABBER-server\033[37m\n");
 		xmpp_connect_client(conn, NULL, 0, conn_handler, ctx);
-//		fprintf(stderr, "DEBUG: disconnected\n");
 //		xmpp_stop(ctx);
 	}
 }
@@ -213,11 +205,14 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 
 redisContext *connectRedis(redisContext *rc) {
 	if (rc == NULL || rc->err) {
-		printf("Redis Connection error\n");
+		fprintf(stderr, "\033[31mReconnect to REDIS-server\033[37m\n");
 		if (rc) {
 			redisFree(rc);
 		}
 		rc = redisConnectWithTimeout(conf.redisHost, conf.redisPort, conf.redisTimeout);
+		if (rc != NULL && !rc->err) {
+			fprintf(stderr, "\033[32mConnected to REDIS-server\033[37m\n");
+		}
 	}
 	return rc;
 }
@@ -233,6 +228,7 @@ void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
 	messageBody++;
 
 	if(strchr(toJid, '@') != NULL && strchr(toJid, '.') != NULL && strncmp(Prefix, toJid, PrefixLen) == 0 ) {
+		printf("\033[36mSend to \033[32m%s\033[37m\n", toJid);
 		toJid += PrefixLen;
 	} else {
 		return;
@@ -240,7 +236,6 @@ void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
 
 	SKIP_SPACE(messageBody);
 	SKIP_SPACE(toJid);
-
 	xmpp_stanza_t *newMsg = xmpp_message_new(ctx, "chat", toJid, NULL /* id */);
 	xmpp_stanza_t *body = xmpp_stanza_new(ctx);
 	xmpp_stanza_t *text = xmpp_stanza_new(ctx);
@@ -313,22 +308,22 @@ void readConfig(char *fname, char *botSectionName) {
 
 void validateConfig() {
 	if(strlen(conf.jid)==0) {
-		error(1, errno, "Invalid config. Empty xmpp/jid");
+		error(1, errno, "\033[31mInvalid config. Empty xmpp/jid\033[37m\n");
 	}
 	if(strlen(conf.pwd)==0) {
-		error(1, errno, "Invalid config. Empty xmpp/pass");
+		error(1, errno, "\033[31mInvalid config. Empty xmpp/pass\033[37m\n");
 	}
 	if(strlen(conf.redisHost)==0) {
-		error(1, errno, "Invalid config. Empty redis/host");
+		error(1, errno, "\033[31mInvalid config. Empty redis/host\033[37m\n");
 	}
 	if(conf.redisPort == 0) {
-		error(1, errno, "Invalid config. Empty redis/port");
+		error(1, errno, "\033[31mInvalid config. Empty redis/port\033[37m\n");
 	}
 	if(strlen(conf.inboundQueue)==0) {
-		error(1, errno, "Invalid config. Empty queue/inbound");
+		error(1, errno, "\033[31mInvalid config. Empty queue/inbound\033[37m\n");
 	}
 	if(strlen(conf.outboundQueue)==0) {
-		error(1, errno, "Invalid config. Empty queue/outbound");
+		error(1, errno, "\033[31mInvalid config. Empty queue/outbound\033[37m\n");
 	}
 }
 
@@ -343,8 +338,24 @@ int main(int argc, char **argv) {
 	conf.redisTimeout.tv_sec = 10;
 	conf.redisTimeout.tv_usec = 500000;
 
+	printf("\033[34m\r");
+	printf("                                                                 d8b   d8,        \n");
+	printf("                                                                 88P  `8P         \n");
+	printf("                                                                d88               \n");
+	printf("?88,  88P  88bd8b,d88b ?88,.d88b,?88,.d88b,  88bd88b d8888b d888888    88b .d888b,\n");
+	printf(" `?8bd8P'  88P'`?8P'?8b`?88'  ?88`?88'  ?88  88P'  `d8b_,dPd8P' ?88    88P ?8b,   \n");
+	printf(" d8P?8b,  d88  d88  88P  88b  d8P  88b  d8P d88     88b    88b  ,88b  d88    `?8b \n");
+	printf("d8P' `?8bd88' d88'  88b  888888P'  888888P'd88'     `?888P'`?88P'`88bd88' `?888P' \n");
+	printf("                         88P'      88P'                                           \n");
+	printf("                        d88       d88                                             \n");
+	printf("                        ?8P       ?8P                                             ");
+	printf("\033[37m\n");
+	printf("(с) 2016 Copyright by \033[36mvaclav2016\033[37m, https://github.com/vaclav2016/xmppredis/\n");
+	printf("\033[31mBoost License, Version 1.0, http://www.boost.org/LICENSE_1_0.txt\033[37m\n");
+	printf("\033[31m(c) Haipo Yang, MIT License, https://github.com/haipome/ini\033[37m\n");
+
 	if(argc != 3) {
-		error(1, errno, "Usage:\nxmppredis section config_file\n");
+		error(1, errno, "\033[31mUsage: xmppredis section config_file\033[37m\n");
 	}
 
 	readConfig(argv[2], argv[1]);
@@ -354,8 +365,10 @@ int main(int argc, char **argv) {
 
 	xmpp_initialize();
 
-	log = xmpp_get_default_logger(XMPP_LEVEL_DEBUG); /* pass NULL instead to silence output */
-	ctx = xmpp_ctx_new(NULL, log);
+//	log = xmpp_get_default_logger(XMPP_LEVEL_DEBUG); /* pass NULL instead to silence output */
+	log = xmpp_get_default_logger((xmpp_log_level_t)NULL);
+//	ctx = xmpp_ctx_new(NULL, log);
+	ctx = xmpp_ctx_new(NULL, NULL);
 
 	conn = xmpp_conn_new(ctx);
 //	xmpp_conn_set_keepalive(conn, KA_TIMEOUT, KA_INTERVAL);

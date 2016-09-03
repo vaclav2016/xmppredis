@@ -30,5 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #define _CURL_CLIENT_H_
 
 extern char *url_get(char *url);
+extern char *url_post(char *url, char *data);
+extern char *url_put(char *url, char *data);
 
 #endif

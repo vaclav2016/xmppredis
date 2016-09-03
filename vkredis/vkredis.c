@@ -37,7 +37,20 @@ DEALINGS IN THE SOFTWARE.
 #include "ini.h"
 
 int main(int argc, char **argv) {
-	char *page = url_get("http://google.com/");
-	printf(page);
+	printf("\033[34m\r");
+	printf("oooooo     oooo oooo        ooooooooo.                   .o8   o8o           \n");
+	printf(" `888.     .8'  `888        `888   `Y88.                \"888   `\"'           \n");
+	printf("  `888.   .8'    888  oooo   888   .d88'  .ooooo.   .oooo888  oooo   .oooo.o \n");
+	printf("   `888. .8'     888 .8P'    888ooo88P'  d88' `88b d88' `888  `888  d88(  \"8 \n");
+	printf("    `888.8'      888888.     888`88b.    888ooo888 888   888   888  `\"Y88b.  \n");
+	printf("     `888'       888 `88b.   888  `88b.  888    .o 888   888   888  o.  )88b \n");
+	printf("      `8'       o888o o888o o888o  o888o `Y8bod8P' `Y8bod88P\" o888o 8""888P' ");
+	printf("\033[37m\n");
+	printf("(с) 2016 Copyright by \033[36mvaclav2016\033[37m, https://github.com/vaclav2016/xmppredis/\n");
+	printf("\033[31mBoost License, Version 1.0, http://www.boost.org/LICENSE_1_0.txt\033[37m\n");
+
+//	char *page = url_get("http://mirror.amsiohosting.net/releases.ubuntu.com/16.04.1/ubuntu-16.04.1-desktop-amd64.iso");
+	char *page = url_get("https://google.com/");
+//	printf(page);
 	free(page);
 }
