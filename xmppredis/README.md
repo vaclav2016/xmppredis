@@ -109,10 +109,21 @@ Also, may be You want install a PHP-extension:
 
 ### Build
 
-You need cmake and make to build.
+You need cmake and make to build. At first, You need install lib ini:
 
+    $ git clone https://github.com/vaclav2016/ini/
+    $ cd ini
     $ cmake ./
     $ make
+    $ cd ..
+
+Now, You can build xmppredis:
+
+    $ git clone https://github.com/vaclav2016/xmppredis
+    $ cd xmppredis/xmppredis
+    $ cmake ./
+    $ make
+    $ cd ..
 
 ## Contacts
 
