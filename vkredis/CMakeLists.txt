@@ -6,5 +6,5 @@ find_package (Threads REQUIRED)
 find_package (Hiredis REQUIRED)
 find_package (CURL REQUIRED)
 
-ADD_EXECUTABLE(vkredis vkredis.c ini.c ini.h json.c json.h curl-client.c curl-client.h)
+ADD_EXECUTABLE(vkredis vkredis.c ini.c ini.h json.c json.h curl-client.c curl-client.h vk.c vk.h)
 TARGET_LINK_LIBRARIES(vkredis m curl hiredis ${CMAKE_THREAD_LIBS_INIT})
