@@ -34,7 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <pthread.h>
 #include "curl-client.h"
 #include <hiredis/hiredis.h>
-#include "ini.h"
+#include <ini/ini.h>
 
 int main(int argc, char **argv) {
 	printf("\033[34m\r");
