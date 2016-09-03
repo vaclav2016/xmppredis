@@ -94,10 +94,11 @@ Code will be shared here with the same license.
 
 If You think about other social platform or protocol - please, contact to me via jabber: vaclav2016@jabber.cz
 
-## Dependencies and Build
+## Dependencies
 
     hiredis
     libstrophe >=8.5
+    ini
 
 With debian-based linux, you can use:
 
@@ -107,22 +108,22 @@ Also, may be You want install a PHP-extension:
 
     $ apt-get install php5-redis
 
-### Build
-
-You need cmake and make to build. At first, You need install lib ini:
+Download and install lib ini:
 
     $ git clone https://github.com/vaclav2016/ini/
     $ cd ini
     $ cmake ./
     $ make
+    $ sudo make install
     $ cd ..
 
-Now, You can build xmppredis:
+Now, You can download and build xmppredis:
 
     $ git clone https://github.com/vaclav2016/xmppredis
     $ cd xmppredis/xmppredis
     $ cmake ./
     $ make
+    $ sudo make install
     $ cd ..
 
 ## Contacts
@@ -141,4 +142,4 @@ Code is licensed with different License:
 1. Redis - http://redis.io/
 2. LibStrophe - https://github.com/strophe/libstrophe
 3. Hiredis - https://github.com/redis/hiredis
-4. Ini library - https://github.com/haipome/ini
+4. Ini library - https://github.com/vaclav2016/ini
