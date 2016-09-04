@@ -46,5 +46,6 @@ vkredis/cmake_install.cmake
 # Builded binary
 xmppredis/xmppredis
 xmppredis/xmppredis.conf
-vkredis/xmppredis
+vkredis/xmppredis.conf
+vkredis/vkredis
 vkredis/xmppredis.conf
