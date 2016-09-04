@@ -6,7 +6,7 @@ Here is set of tools / bridges builded with [REDIS](http://redis.io/).
 * [XmppWebAuth](xmppwebauth/) - Implements web-authorization (php) via jabber without keeping password into database.
 * [VkRedis](vkredis/) - under construction.
 
-## Donate to growthup
+## Donate
 
 I maintain this project in my free time, if it helped you please support my work via Bitcoins, thanks a lot!
 
