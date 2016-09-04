@@ -83,7 +83,7 @@ String `redis=localhostRedis` has the same reference - it is mean to take [REDIS
 
 So, multiple bot can have reference to the same [REDIS](http://redis.io/)-server.
 
-## Donate to growthup
+## Donate
 
 I maintain this project in my free time, if it helped you please support my work via Bitcoins, thanks a lot!
 
