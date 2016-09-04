@@ -87,12 +87,7 @@ So, multiple bot can have reference to the same [REDIS](http://redis.io/)-server
 
 I maintain this project in my free time, if it helped you please support my work via Bitcoins, thanks a lot!
 
-* To start **Skype** bridge, bitcoin-wallet is: `1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3`
-* To start **Facebook** bridge, bitcoin-wallet is: `1DQWKuG6kUpkzkYX52k6VccbPoP3XSYxYC`
-
-Code will be shared here with the same license.
-
-If You think about other social platform or protocol - please, contact to me via jabber: vaclav2016@jabber.cz
+Bitcoin wallet is `1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3`
 
 ## Dependencies
 
