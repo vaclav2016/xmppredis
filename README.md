@@ -9,6 +9,7 @@ Here is set of tools / bridges builded with [REDIS](http://redis.io/).
 ## Donate to growthup
 
 I maintain this project in my free time, if it helped you please support my work via Bitcoins, thanks a lot!
+
 Bitcoin-wallet is: `1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3`
 
 ## Licensing
