@@ -33,7 +33,9 @@ Also, in this case, target for bruteforce attacks will be customer's jabber serv
 
 ## Donate
 
-I maintain this project in my free time, if it helped you please support my work via Bitcoins, thanks a lot! `1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3`
+I maintain this project in my free time, if it helped you please support my work via Bitcoins, thanks a lot! 
+
+Bitcoin wallet is `1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3`
 
 ## Contacts
 
