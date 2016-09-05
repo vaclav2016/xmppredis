@@ -157,7 +157,6 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 		int bufLen = strlen(PublishCmd) + strlen(replytext) + strlen(conf.inboundQueue);
 		char *buf = malloc(bufLen);
 		snprintf(buf, bufLen, PublishCmd, conf.inboundQueue, replytext);
-// printf("%s\n", buf);
 		rreply = redisCommand(rc, buf);
 		freeReplyObject(rreply);
 
