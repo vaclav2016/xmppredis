@@ -51,7 +51,6 @@ const char *PublishCmd = "PUBLISH %s %s";
 const char *SubscribeCmdTemplate = "SUBSCRIBE %s";
 const char *Prefix = "jid:";
 const int PrefixLen = 4;
-
 char subscribeCmd[DEFAUL_STR_SIZE];
 
 struct Config {
@@ -63,6 +62,18 @@ struct Config {
 	char inboundQueue[DEFAUL_STR_SIZE];
 	char outboundQueue[DEFAUL_STR_SIZE];
 } conf;
+
+
+struct MessageQueue {
+	char *body;
+	struct MessageQueue *next;
+};
+
+pthread_mutex_t fromRedisQueueLock = PTHREAD_MUTEX_INITIALIZER;
+struct MessageQueue *fromRedisQueue;
+
+struct MessageQueue *sendToXmppQueue;
+struct MessageQueue *sendToRedisQueue;
 
 int version_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void * const userdata) {
 	xmpp_stanza_t *reply, *query, *name, *version, *text;
@@ -148,21 +159,11 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 		t++;
 	}
 
-	redisContext *rc;
-	redisReply *rreply;
-
-	rc = redisConnectWithTimeout(conf.redisHost, conf.redisPort, conf.redisTimeout);
-
-	if (rc != NULL && !rc->err) {
-		int bufLen = strlen(PublishCmd) + strlen(replytext) + strlen(conf.inboundQueue);
-		char *buf = malloc(bufLen);
-		snprintf(buf, bufLen, PublishCmd, conf.inboundQueue, replytext);
-		rreply = redisCommand(rc, buf);
-		freeReplyObject(rreply);
-
-		redisFree(rc);
-		free(buf);
-	}
+	struct MessageQueue *nm = malloc(sizeof(struct MessageQueue));
+	nm->body = malloc(strlen(replytext)+1);
+	strcpy(nm->body, replytext);
+	nm->next = sendToRedisQueue;
+	sendToRedisQueue = nm;
 
 	free(replytext);
 	return 1;
@@ -190,7 +191,6 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 //		xmpp_stop(ctx);
 	}
 }
-
 
 redisContext *connectRedis(redisContext *rc) {
 	if (rc == NULL || rc->err) {
@@ -233,7 +233,6 @@ void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
 }
 
 void *redisClient(void *args) {
-
 	xmpp_ctx_t *ctx = ((struct ThreadArgs *)args)->ctx;
 	xmpp_conn_t *conn = ((struct ThreadArgs *)args)->conn;
 
@@ -241,26 +240,28 @@ void *redisClient(void *args) {
 
 	int j;
 
-	char *messagBuffer = malloc(MESSAGE_BUF_SIZE);
-
 	while(1) {
 		rSubscCtx = connectRedis(rSubscCtx);
 		redisReply *reply = redisCommand(rSubscCtx, subscribeCmd);
 		freeReplyObject(reply);
 		while(redisGetReply(rSubscCtx, (void**)&reply) == REDIS_OK) {
 			if (reply->type == REDIS_REPLY_ARRAY) {
+				pthread_mutex_lock(&fromRedisQueueLock);
 				for (j = 0; j < reply->elements; j++) {
 					if(reply->element[j]->type == REDIS_REPLY_STRING) {
-						strncpy(messagBuffer, reply->element[j]->str, MESSAGE_BUF_SIZE);
-						sendMessage(ctx, conn, messagBuffer);
+						struct MessageQueue *msg = malloc(sizeof(struct MessageQueue));
+						msg->body = malloc(strlen(reply->element[j]->str) + 1);
+						strcpy(msg->body, reply->element[j]->str);
+						msg->next = fromRedisQueue;
+						fromRedisQueue = msg;
 					}
 				}
+				pthread_mutex_unlock(&fromRedisQueueLock);
 			}
 			freeReplyObject(reply);
 		}
 	}
 	redisFree(rSubscCtx);
-	free(messagBuffer);
 	xmpp_conn_release(conn);
 	return NULL;
 }
@@ -286,6 +287,48 @@ void readConfig(char *fname, char *botSectionName) {
 
 	ini_free(config);
 
+}
+
+void sendMessages_once(xmpp_ctx_t *ctx, xmpp_conn_t *conn) {
+	struct MessageQueue *this;
+	while ( (this = sendToXmppQueue) != NULL) {
+		sendToXmppQueue = sendToXmppQueue->next;
+		sendMessage(ctx, conn, this->body);
+		free(this->body);
+		free(this);
+	}
+}
+
+void populateMessagesFromRedis() {
+	struct MessageQueue *this;
+	pthread_mutex_lock(&fromRedisQueueLock);
+	while( (this = fromRedisQueue) != NULL ) {
+		fromRedisQueue = fromRedisQueue->next;
+		this->next = sendToXmppQueue;
+		sendToXmppQueue = this;
+	}
+	pthread_mutex_unlock(&fromRedisQueueLock);
+}
+
+void populateMesageToRedis() {
+	if( sendToRedisQueue == NULL ) {
+		return;
+	}
+	redisContext *rc = redisConnectWithTimeout(conf.redisHost, conf.redisPort, conf.redisTimeout);
+	if (rc != NULL && !rc->err) {
+		struct MessageQueue *this;
+		while( (this = sendToRedisQueue) != NULL) {
+			sendToRedisQueue = sendToRedisQueue->next;
+			int bufLen = strlen(PublishCmd) + strlen(this->body) + strlen(conf.inboundQueue);
+			char *buf = malloc(bufLen);
+			snprintf(buf, bufLen, PublishCmd, conf.inboundQueue, this->body);
+			freeReplyObject(redisCommand(rc, buf));
+			free(buf);
+			free(this->body);
+			free(this);
+		}
+		redisFree(rc);
+	}
 }
 
 void validateConfig() {
@@ -319,6 +362,9 @@ int main(int argc, char **argv) {
 	struct ThreadArgs args;
 	conf.redisTimeout.tv_sec = 10;
 	conf.redisTimeout.tv_usec = 500000;
+	fromRedisQueue = NULL;
+	sendToXmppQueue = NULL;
+	sendToRedisQueue = NULL;
 
 	printf("\033[34m\r");
 	printf("                                                                 d8b   d8,        \n");
@@ -353,7 +399,7 @@ int main(int argc, char **argv) {
 	ctx = xmpp_ctx_new(NULL, NULL);
 
 	conn = xmpp_conn_new(ctx);
-//	xmpp_conn_set_keepalive(conn, KA_TIMEOUT, KA_INTERVAL);
+	xmpp_conn_set_keepalive(conn, 60000, 30000);
 
 	xmpp_conn_set_jid(conn, conf.jid);
 	xmpp_conn_set_pass(conn, conf.pwd);
@@ -364,12 +410,18 @@ int main(int argc, char **argv) {
 	args.conn = xmpp_conn_clone(conn);
 
 	pthread_create(&thread, NULL, redisClient, &args);
-	xmpp_run(ctx);
+	while(1) {
+		xmpp_run_once(ctx, 10*1000);
+		populateMesageToRedis();
+		populateMessagesFromRedis();
+		sendMessages_once(ctx, conn);
+	}
 
 	xmpp_conn_release(conn);
 	xmpp_ctx_free(ctx);
 
 	xmpp_shutdown();
+	pthread_mutex_destroy(&fromRedisQueueLock);
 
 	return 0;
 }
