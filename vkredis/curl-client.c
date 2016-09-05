@@ -139,6 +139,8 @@ char *do_call(char *url, char *uploadData, CURLoption option, long parameter) {
 	char *mem;
 	char *result = NULL;
 	char resOut[16];
+	char site[255];
+	char *ptr;
 	struct WebData inData, outData;
 
 	curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -176,7 +178,13 @@ char *do_call(char *url, char *uploadData, CURLoption option, long parameter) {
 		inData.str = NULL;
 		inData.ofs = 0;
 
-		printf("\033[33m[DL]\033[32m %s\033[37m\n", url);
+		ptr = strchr(url, '?');
+		if(ptr != NULL) {
+			strncpy(site, url, ptr-url);
+			printf("\033[33m[DL]\033[32m %15s\033[37m\n", site);
+		} else {
+			printf("\033[33m[DL]\033[32m %15s\033[37m\n", url);
+		}
 		res = curl_easy_perform(curl);
 		printf("\r\033[0K\r");
 

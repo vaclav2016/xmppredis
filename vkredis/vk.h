@@ -29,8 +29,31 @@ DEALINGS IN THE SOFTWARE.
 #ifndef _VK_H_
 #define _VK_H_
 
+#include<cjson/json.h>
 
-extern char *vk_auth(char *login, char *pwd, char *appId);
+#define DEFAUL_STR_SIZE 1024
+
+typedef struct Config {
+	char redisHost[DEFAUL_STR_SIZE];
+	uint32_t redisPort;
+	struct timeval redisTimeout;
+
+	char app_id[DEFAUL_STR_SIZE];
+	char secure_key[DEFAUL_STR_SIZE];
+	char vk_id[DEFAUL_STR_SIZE];
+	char pwd[DEFAUL_STR_SIZE];
+
+	char access_token[DEFAUL_STR_SIZE];
+	char need_access_token;
+
+	char lastMessageId[DEFAUL_STR_SIZE];
+
+	char inboundQueue[DEFAUL_STR_SIZE];
+	char outboundQueue[DEFAUL_STR_SIZE];
+} *CONFIG;
+
+extern char *vk_auth(CONFIG c);
+extern json_value* vk_getMessages(CONFIG c);
 
 
 #endif

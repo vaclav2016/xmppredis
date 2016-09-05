@@ -27,10 +27,59 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<strings.h>
+#include<stdint.h>
 #include"curl-client.h"
 #include"vk.h"
 
-char *vk_auth(char *login, char *pwd, char *appId) {
+const char *CallbackBlank = "https%3A%2F%2Foauth.vk.com%2Fblank.html";
+const char *AuthUrl  = "https://oauth.vk.com/authorize?";
+const char *GetTokenUrl  = "https://oauth.vk.com/access_token?";
+const char *MethodUrl = "https://api.vk.com/method/";
+const char *GetMessagesUrl = "https://api.vk.com/method/messages.get?access_token=%s&out=0&count=10&v=5.52&last_message_id=%s";
+
+const char *AuthParams = "https://oauth.vk.com/access_token?client_id=%s&client_secret=%s&v=5.1&grant_type=client_credentials&scope=messages";
+
+char *vk_auth(CONFIG c) {
+	char buf[DEFAUL_STR_SIZE];
+	char *response;
+	json_value* value;
+	int length, x;
+
+	snprintf(buf, DEFAUL_STR_SIZE, AuthParams, c->app_id, c->secure_key);
+	response = url_get(buf);
+	value = json_parse(response, strlen(response));
+	if (value != NULL && value->type == json_object) {
+		length = value->u.object.length;
+		for (x = 0; x < length; x++) {
+			if(strcmp("access_token", value->u.object.values[x].name)==0) {
+				if(value->u.object.values[x].value != NULL && value->u.object.values[x].value->type==json_string) {
+					strcpy(c->access_token, value->u.object.values[x].value->u.string.ptr);
+					c->need_access_token = 0;
+				}
+			}
+		}
+	}
+	if(c->need_access_token) {
+		printf("[Error] Not access token received:\n%s\n", response);
+	} else {
+		printf("[OK] Access token received\n");
+	}
+	free(response);
+	json_value_free(value);
+	return NULL;
 }
 
+json_value* vk_getMessages(CONFIG c) {
+	char buf[DEFAUL_STR_SIZE];
+	char *response;
+
+	snprintf(buf, DEFAUL_STR_SIZE, GetMessagesUrl, c->app_id, c->lastMessageId);
+	response = url_get(buf);
+	printf("response = [%s]\n", response);
+	free(response);
+	return NULL;
+}
 

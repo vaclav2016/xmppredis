@@ -32,9 +32,76 @@ DEALINGS IN THE SOFTWARE.
 #include <error.h>
 #include <errno.h>
 #include <pthread.h>
-#include "curl-client.h"
 #include <hiredis/hiredis.h>
 #include <ini/ini.h>
+#include "curl-client.h"
+#include "vk.h"
+
+#define MESSAGE_BUF_SIZE 1024*64
+#define SKIP_SPACE(a) while(*a == ' ' && *a!=0) { a++;}
+
+struct Config conf;
+
+void checkMessages(CONFIG c) {
+	json_value* value = vk_getMessages(c);
+	if(value != NULL) {
+		json_value_free(value);
+	}
+}
+
+void readConfig(char *fname, char *botSectionName) {
+	char redisSectionName[1024];
+
+	ini_t *config = ini_load(fname);
+
+	if (config == NULL) {
+		error(1, errno, "ini_load fail");
+	}
+
+	ini_read_strn(config, botSectionName, "redis", redisSectionName, sizeof(redisSectionName), NULL);
+
+	ini_read_strn(config, botSectionName, "app_id", conf.app_id, DEFAUL_STR_SIZE, NULL);
+	ini_read_strn(config, botSectionName, "secure_key", conf.secure_key, DEFAUL_STR_SIZE, NULL);
+
+	ini_read_strn(config, botSectionName, "vk_id", conf.vk_id, DEFAUL_STR_SIZE, NULL);
+	ini_read_strn(config, botSectionName, "password", conf.pwd, DEFAUL_STR_SIZE, NULL);
+
+	ini_read_strn(config, redisSectionName, "host", conf.redisHost, DEFAUL_STR_SIZE, NULL);
+	ini_read_uint32(config, redisSectionName, "port", &conf.redisPort, 0);
+
+	ini_read_strn(config, botSectionName, "inbound", conf.inboundQueue, DEFAUL_STR_SIZE, NULL);
+	ini_read_strn(config, botSectionName, "outbound", conf.outboundQueue, DEFAUL_STR_SIZE, NULL);
+
+	ini_free(config);
+}
+
+void validateConfig() {
+	if(strlen(conf.app_id)==0) {
+		error(1, errno, "\033[31mInvalid config. Empty vk/app_id\033[37m\n");
+	}
+	if(strlen(conf.secure_key)==0) {
+		error(1, errno, "\033[31mInvalid config. Empty vk/secure_key\033[37m\n");
+	}
+	if(strlen(conf.vk_id)==0) {
+		error(1, errno, "\033[31mInvalid config. Empty vk/vk_id\033[37m\n");
+	}
+	if(strlen(conf.pwd)==0) {
+		error(1, errno, "\033[31mInvalid config. Empty vk/password\033[37m\n");
+	}
+	if(strlen(conf.redisHost)==0) {
+		error(1, errno, "\033[31mInvalid config. Empty redis/host\033[37m\n");
+	}
+	if(conf.redisPort == 0) {
+		error(1, errno, "\033[31mInvalid config. Empty redis/port\033[37m\n");
+	}
+	if(strlen(conf.inboundQueue)==0) {
+		error(1, errno, "\033[31mInvalid config. Empty queue/inbound\033[37m\n");
+	}
+	if(strlen(conf.outboundQueue)==0) {
+		error(1, errno, "\033[31mInvalid config. Empty queue/outbound\033[37m\n");
+	}
+}
+
 
 int main(int argc, char **argv) {
 	printf("\033[34m\r");
@@ -49,8 +116,22 @@ int main(int argc, char **argv) {
 	printf("(с) 2016 Copyright by \033[36mvaclav2016\033[37m, https://github.com/vaclav2016/xmppredis/\n");
 	printf("\033[31mBoost License, Version 1.0, http://www.boost.org/LICENSE_1_0.txt\033[37m\n");
 
-//	char *page = url_get("http://mirror.amsiohosting.net/releases.ubuntu.com/16.04.1/ubuntu-16.04.1-desktop-amd64.iso");
-	char *page = url_get("https://google.com/");
-//	printf(page);
-	free(page);
+	if(argc != 3) {
+		error(1, errno, "\033[31mUsage: vkredis section config_file\033[37m\n");
+	}
+
+	readConfig(argv[2], argv[1]);
+	validateConfig();
+
+	conf.need_access_token = 1;
+	conf.lastMessageId[0] = 0;
+
+	while(1) {
+		if(conf.need_access_token) {
+			vk_auth(&conf);
+		} else {
+			checkMessages(&conf);
+		}
+		sleep(30);
+	}
 }

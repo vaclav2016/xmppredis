@@ -9,4 +9,4 @@ find_package (cjson REQUIRED)
 find_package (Ini REQUIRED)
 
 ADD_EXECUTABLE(vkredis vkredis.c curl-client.c curl-client.h vk.c vk.h)
-TARGET_LINK_LIBRARIES(vkredis m cjson curl hiredis ${CMAKE_THREAD_LIBS_INIT})
+TARGET_LINK_LIBRARIES(vkredis m cjson ini curl hiredis ${CMAKE_THREAD_LIBS_INIT})
