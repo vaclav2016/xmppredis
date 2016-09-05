@@ -135,7 +135,7 @@ is licensed under the Boost License, Version 1.0.
 
 ## References
 
-1. Redis - http://redis.io/
-2. LibStrophe - https://github.com/strophe/libstrophe
-3. Hiredis - https://github.com/redis/hiredis
-4. Ini library - https://github.com/vaclav2016/ini
+1. Redis - <http://redis.io/>
+2. LibStrophe - <https://github.com/strophe/libstrophe>
+3. Hiredis - <https://github.com/redis/hiredis>
+4. Ini library - <https://github.com/vaclav2016/ini>
