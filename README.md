@@ -8,8 +8,8 @@ Here is set of tools / bridges builded with [REDIS](http://redis.io/).
 
 ## News
 
-* 2016-09-05 Good news for everyone! New release. Now, project is thread-safe. Great thanks to Dmitry Podgorny.
-* 2016-09-04 First initial release
+* **2016-09-05** Good news for everyone! New release. Now, project is thread-safe. Great thanks to Dmitry Podgorny.
+* **2016-09-04** First initial release
 
 ## Donate
 
