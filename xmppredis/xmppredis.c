@@ -42,11 +42,6 @@ DEALINGS IN THE SOFTWARE.
 #define SKIP_SPACE(a) while(*a == ' ' && *a!=0) { a++;}
 #define DEFAUL_STR_SIZE 1024
 
-struct ThreadArgs {
-	xmpp_ctx_t *ctx;
-	xmpp_conn_t *conn;
-};
-
 const char *PublishCmd = "PUBLISH %s %s";
 const char *SubscribeCmdTemplate = "SUBSCRIBE %s";
 const char *Prefix = "jid:";
@@ -232,14 +227,8 @@ void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
 	xmpp_stanza_release(newMsg);
 }
 
-void *redisClient(void *args) {
-	xmpp_ctx_t *ctx = ((struct ThreadArgs *)args)->ctx;
-	xmpp_conn_t *conn = ((struct ThreadArgs *)args)->conn;
-
+void *redisClientThread(void *args) {
 	redisContext *rSubscCtx = connectRedis(NULL);
-
-	int j;
-
 	while(1) {
 		rSubscCtx = connectRedis(rSubscCtx);
 		redisReply *reply = redisCommand(rSubscCtx, subscribeCmd);
@@ -247,11 +236,12 @@ void *redisClient(void *args) {
 		while(redisGetReply(rSubscCtx, (void**)&reply) == REDIS_OK) {
 			if (reply->type == REDIS_REPLY_ARRAY) {
 				pthread_mutex_lock(&fromRedisQueueLock);
-				for (j = 0; j < reply->elements; j++) {
-					if(reply->element[j]->type == REDIS_REPLY_STRING) {
+				int i;
+				for (i = 0; i < reply->elements; i++) {
+					if(reply->element[i]->type == REDIS_REPLY_STRING) {
 						struct MessageQueue *msg = malloc(sizeof(struct MessageQueue));
-						msg->body = malloc(strlen(reply->element[j]->str) + 1);
-						strcpy(msg->body, reply->element[j]->str);
+						msg->body = malloc(strlen(reply->element[i]->str) + 1);
+						strcpy(msg->body, reply->element[i]->str);
 						msg->next = fromRedisQueue;
 						fromRedisQueue = msg;
 					}
@@ -262,7 +252,6 @@ void *redisClient(void *args) {
 		}
 	}
 	redisFree(rSubscCtx);
-	xmpp_conn_release(conn);
 	return NULL;
 }
 
@@ -359,7 +348,6 @@ int main(int argc, char **argv) {
 	xmpp_log_t *log;
 	pthread_t thread;
 
-	struct ThreadArgs args;
 	conf.redisTimeout.tv_sec = 10;
 	conf.redisTimeout.tv_usec = 500000;
 	fromRedisQueue = NULL;
@@ -406,10 +394,7 @@ int main(int argc, char **argv) {
 
 	xmpp_connect_client(conn, NULL, 0, conn_handler, ctx);
 
-	args.ctx = ctx;
-	args.conn = xmpp_conn_clone(conn);
-
-	pthread_create(&thread, NULL, redisClient, &args);
+	pthread_create(&thread, NULL, redisClientThread, NULL);
 	while(1) {
 		xmpp_run_once(ctx, 10*1000);
 		populateMesageToRedis();
