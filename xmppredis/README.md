@@ -10,9 +10,7 @@ What use case for this sub-project?
 * For hardware/languages without rich hardware/libraries - Arduino, STM32 etc. For example: libopenssl may be is too big for Arduino, but notification exchange is require strong crypto-protection. Another example: I am happy use  [Smack](http://www.igniterealtime.org/projects/smack/) library, but have too many instances of Java Runtime Environment (JRE) is not good idea for my ARM'based servers - [C.H.I.P.](http://getchip.com/) and [Raspberry PI](https://www.raspberrypi.org/).
 * Building bridges between social platforms or internet protocols (jabber <-> email, skype <-> jabber etc). This bridges will be usefull for business (notification from your server to backoffice and customers) or for keeping your privacy (in case, when you place your bridge into [TOR](https://www.torproject.org/)).
 
-In this cases, you just a place message to [REDIS](http://redis.io/) queue.
-
-Also, remember - queue can have more then one subscriber, so you can play with subscribers combination.
+In this cases, you just a place message to [REDIS](http://redis.io/) queue. This is enought.
 
 Message format is simple text:
 
@@ -20,6 +18,8 @@ Message format is simple text:
     message text
 
 For inbound queue - it will be sender JID, for outbound queue - it will be receiver JID.
+
+Also, remember - queue can have more then one subscriber, so you can play with subscribers combination.
 
 ## How it works ? Example in PHP
 
