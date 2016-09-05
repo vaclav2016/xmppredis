@@ -37,6 +37,7 @@ DEALINGS IN THE SOFTWARE.
 #include <ini/ini.h>
 
 #define MESSAGE_BUF_SIZE 1024*64
+#define MAX_INCOME_MESSAGE_SIZE 4*1024
 
 #define SKIP_SPACE(a) while(*a == ' ' && *a!=0) { a++;}
 #define DEFAUL_STR_SIZE 1024
@@ -118,20 +119,9 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 	intext = xmpp_stanza_get_text(xmpp_stanza_get_child_by_name(stanza, "body"));
 	const char *from = xmpp_stanza_get_from(stanza);
 
-	if( strlen(intext) > 4*1024) {
-		body = xmpp_stanza_new(ctx);
-		xmpp_stanza_set_name(body, "body");
+	if( strlen(intext) > MAX_INCOME_MESSAGE_SIZE) {
 		reply = xmpp_stanza_reply(stanza);
-		if (xmpp_stanza_get_type(reply) == NULL) {
-			xmpp_stanza_set_type(reply, "chat");
-		}
-		text = xmpp_stanza_new(ctx);
-		xmpp_stanza_set_text(text, "[DROP] Your message is too big and has been droped.");
-		xmpp_stanza_add_child(body, text);
-		xmpp_stanza_add_child(reply, body);
-		xmpp_stanza_release(body);
-		xmpp_stanza_release(text);
-
+		xmpp_message_set_body(reply, "[DROP] Your message is too big and has been droped.");
 		xmpp_send(conn, reply);
 		xmpp_stanza_release(reply);
 		free(replytext);
@@ -236,16 +226,9 @@ void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
 
 	SKIP_SPACE(messageBody);
 	SKIP_SPACE(toJid);
-	xmpp_stanza_t *newMsg = xmpp_message_new(ctx, "chat", toJid, NULL /* id */);
-	xmpp_stanza_t *body = xmpp_stanza_new(ctx);
-	xmpp_stanza_t *text = xmpp_stanza_new(ctx);
-	xmpp_stanza_set_name(body, "body");
-	xmpp_stanza_add_child(newMsg, body);
-	xmpp_stanza_add_child(body, text);
-	xmpp_stanza_set_text(text, messageBody);
-	xmpp_stanza_release(body);
-	xmpp_stanza_release(text);
 
+	xmpp_stanza_t *newMsg = xmpp_message_new(ctx, "chat", toJid, NULL /* id */);
+	xmpp_message_set_body(newMsg, messageBody);
 	xmpp_send(conn, newMsg);
 	xmpp_stanza_release(newMsg);
 }
