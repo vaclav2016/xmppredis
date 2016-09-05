@@ -43,9 +43,9 @@ This example PHP-script is try to send message to JID somebody@a35a17e05e4z6vxdl
 
 How act this example?
 
-1. PHP push message to queue `out_testbot` in [REDIS](http://redis.io/)
-2. XmppRedis, as `out_testbot`-queue subscriber, pickup message from queue
-3. XmppRedis parse and send message to `somebody@a35a17e05e4z6vxdl.onion`
+1. **PHP-script** push message to queue `out_testbot` in [REDIS](http://redis.io/)
+2. **XmppRedis**, as `out_testbot`-queue subscriber, pickup message from queue
+3. **XmppRedis** parse and send message to `somebody@a35a17e05e4z6vxdl.onion`
 
 So, if you want receive jabber-messages via xmppredis - you must execute `SUBSCRIBE in_testbot` in your application.
 
