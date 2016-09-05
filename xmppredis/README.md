@@ -92,7 +92,7 @@ Bitcoin wallet is `1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3`
 ## Dependencies
 
     hiredis
-    libstrophe >=**0.9.0**
+    libstrophe >= 0.9.0
     ini
 
 With debian-based linux, you can use:
