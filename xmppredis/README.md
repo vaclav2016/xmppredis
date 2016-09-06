@@ -127,11 +127,7 @@ Please, fill free contact to me via jabber: vaclav2016@jabber.cz
 
 ## Licensing
 
-<<<<<<< HEAD
 (c) 2016 Copyright Vaclav2016 https://github.com/vaclav2016, jabber id vaclav2016@jabber.cz
-=======
-(с) 2016 Copyright by vaclav2016, <https://github.com/vaclav2016/xmppredis/>
->>>>>>> d6105e94e1fc1cdb9de6ab7fca78897551fb8554
 
 is licensed under the Boost License, Version 1.0.
 
