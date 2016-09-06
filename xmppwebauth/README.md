@@ -43,9 +43,8 @@ Please, fill free contact to me via jabber: vaclav2016@jabber.cz
 
 ## Licensing
 
-(с) 2016 Copyright by vaclav2016, https://github.com/vaclav2016/xmppredis/
+(c) 2016 Copyright Vaclav2016 https://github.com/vaclav2016, jabber id vaclav2016@jabber.cz
 
-Code is licensed under the Boost License, Version 1.0. See each
-repository's licensing information for details and exceptions.
+is licensed under the Boost License, Version 1.0.
 
-http://www.boost.org/LICENSE_1_0.txt
+<http://www.boost.org/LICENSE_1_0.txt>
