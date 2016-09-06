@@ -3,8 +3,13 @@
 Here is set of tools / bridges builded with [REDIS](http://redis.io/).
 
 * [XmppRedis](xmppredis/) - [XMPP](http://xmpp.org/) / [REDIS](http://redis.io/) bridge in C. XmppRedis will receive / send messages between Jabber and [REDIS](http://redis.io/)-channels.
-* [XmppWebAuth](xmppwebauth/) - Implements web-authorization (php) via jabber without keeping password into database.
+* [XmppWebAuth](xmppwebauth/) - Implements web-authorization (php) via [XmppRedis](xmppredis/) without keeping password into database.
 * [VkRedis](vkredis/) - under construction.
+
+## News
+
+* **2016-09-05** Good news for everyone! New release. Now, project is thread-safe. Great thanks to Dmitry Podgorny.
+* **2016-09-04** First initial release
 
 ## Donate
 
