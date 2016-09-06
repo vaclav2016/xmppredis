@@ -1,5 +1,6 @@
 /*
-(с) 2016 Copyright by vaclav2016, https://github.com/vaclav2016/xmppredis/
+
+(c) 2016 Copyright Vaclav2016 https://github.com/vaclav2016, jabber id vaclav2016@jabber.cz
 
 Boost Software License - Version 1.0 - August 17th, 2003
 
@@ -24,6 +25,7 @@ SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE
 FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
+
 */
 
 #include <stdio.h>
@@ -50,7 +52,7 @@ char subscribeCmd[DEFAUL_STR_SIZE];
 
 struct Config {
 	char redisHost[DEFAUL_STR_SIZE];
-	uint32_t redisPort;
+	uint64_t redisPort;
 	struct timeval redisTimeout;
 	char jid[DEFAUL_STR_SIZE];
 	char pwd[DEFAUL_STR_SIZE];
@@ -257,22 +259,22 @@ void *redisClientThread(void *args) {
 
 void readConfig(char *fname, char *botSectionName) {
 	char redisSectionName[256];
-	ini_t *config = ini_load(fname);
+	void *config = ini_load(fname);
 
 	if (config == NULL) {
 		error(1, errno, "ini_load fail");
 	}
 
-	ini_read_strn(config, botSectionName, "redis", redisSectionName, sizeof(redisSectionName), NULL);
+	ini_getstr(config, botSectionName, "redis", redisSectionName, sizeof(redisSectionName));
 
-	ini_read_strn(config, botSectionName, "jid", conf.jid, DEFAUL_STR_SIZE, NULL);
-	ini_read_strn(config, botSectionName, "password", conf.pwd, DEFAUL_STR_SIZE, NULL);
+	ini_getstr(config, botSectionName, "jid", conf.jid, DEFAUL_STR_SIZE);
+	ini_getstr(config, botSectionName, "password", conf.pwd, DEFAUL_STR_SIZE);
 
-	ini_read_strn(config, redisSectionName, "host", conf.redisHost, DEFAUL_STR_SIZE, NULL);
-	ini_read_uint32(config, redisSectionName, "port", &conf.redisPort, 0);
+	ini_getstr(config, redisSectionName, "host", conf.redisHost, DEFAUL_STR_SIZE);
+	ini_getint(config, redisSectionName, "port", &conf.redisPort);
 
-	ini_read_strn(config, botSectionName, "inbound", conf.inboundQueue, DEFAUL_STR_SIZE, NULL);
-	ini_read_strn(config, botSectionName, "outbound", conf.outboundQueue, DEFAUL_STR_SIZE, NULL);
+	ini_getstr(config, botSectionName, "inbound", conf.inboundQueue, DEFAUL_STR_SIZE);
+	ini_getstr(config, botSectionName, "outbound", conf.outboundQueue, DEFAUL_STR_SIZE);
 
 	ini_free(config);
 
