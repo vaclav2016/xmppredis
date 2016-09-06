@@ -93,7 +93,6 @@ Bitcoin wallet is `1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3`
 
     hiredis
     libstrophe >= 0.9.0
-    ini
 
 With debian-based linux, you can use:
 
