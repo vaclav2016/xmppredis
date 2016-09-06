@@ -19,9 +19,10 @@ Bitcoin-wallet is: `1QAfNs5Utygt2XQoV3YCykzHs63S3AfEJ3`
 
 ## Licensing
 
-(с) 2016 Copyright by vaclav2016, https://github.com/vaclav2016/xmppredis/
+See each repository's licensing information for details and exceptions.
 
-Code is licensed under the Boost License, Version 1.0. See each
-repository's licensing information for details and exceptions.
+(c) 2016 Copyright Vaclav2016 https://github.com/vaclav2016, jabber id vaclav2016@jabber.cz
 
-http://www.boost.org/LICENSE_1_0.txt
+is licensed under the Boost License, Version 1.0.
+
+<http://www.boost.org/LICENSE_1_0.txt>
