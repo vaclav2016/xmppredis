@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <error.h>
 #include <errno.h>
 #include <pthread.h>
+#include <unistd.h>
 #include <hiredis/hiredis.h>
 #include <ini/ini.h>
 
@@ -53,6 +54,7 @@ char subscribeCmd[DEFAUL_STR_SIZE];
 struct Config {
 	char redisHost[DEFAUL_STR_SIZE];
 	uint64_t redisPort;
+	char online;
 	struct timeval redisTimeout;
 	char jid[DEFAUL_STR_SIZE];
 	char pwd[DEFAUL_STR_SIZE];
@@ -182,10 +184,11 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 		xmpp_stanza_set_name(pres, "presence");
 		xmpp_send(conn, pres);
 		xmpp_stanza_release(pres);
+		conf.online = 1;
 	} else if (status == XMPP_CONN_DISCONNECT || status == XMPP_CONN_FAIL){
 		fprintf(stderr, "\033[31mDisconnect from JABBER-server\033[37m\n");
-		xmpp_connect_client(conn, NULL, 0, conn_handler, ctx);
-//		xmpp_stop(ctx);
+		conf.online = 0;
+		xmpp_conn_release(conn);
 	}
 }
 
@@ -266,7 +269,6 @@ void readConfig(char *fname, char *botSectionName) {
 	}
 
 	ini_getstr(config, botSectionName, "redis", redisSectionName, sizeof(redisSectionName));
-
 	ini_getstr(config, botSectionName, "jid", conf.jid, DEFAUL_STR_SIZE);
 	ini_getstr(config, botSectionName, "password", conf.pwd, DEFAUL_STR_SIZE);
 
@@ -378,7 +380,7 @@ int main(int argc, char **argv) {
 
 	readConfig(argv[2], argv[1]);
 	validateConfig();
-
+	conf.online = 0;
 	snprintf(subscribeCmd, sizeof(subscribeCmd), SubscribeCmdTemplate, conf.outboundQueue);
 
 	xmpp_initialize();
@@ -388,20 +390,24 @@ int main(int argc, char **argv) {
 //	ctx = xmpp_ctx_new(NULL, log);
 	ctx = xmpp_ctx_new(NULL, NULL);
 
-	conn = xmpp_conn_new(ctx);
-	xmpp_conn_set_keepalive(conn, 60000, 30000);
-
-	xmpp_conn_set_jid(conn, conf.jid);
-	xmpp_conn_set_pass(conn, conf.pwd);
-
-	xmpp_connect_client(conn, NULL, 0, conn_handler, ctx);
 
 	pthread_create(&thread, NULL, redisClientThread, NULL);
 	while(1) {
-		xmpp_run_once(ctx, 10*1000);
-		populateMesageToRedis();
-		populateMessagesFromRedis();
-		sendMessages_once(ctx, conn);
+		if(conf.online) {
+			xmpp_run_once(ctx, 10*1000);
+			populateMesageToRedis();
+			populateMessagesFromRedis();
+			sendMessages_once(ctx, conn);
+		} else {
+			sleep(30);
+			conn = xmpp_conn_new(ctx);
+			xmpp_conn_set_keepalive(conn, 60000, 30000);
+
+			xmpp_conn_set_jid(conn, conf.jid);
+			xmpp_conn_set_pass(conn, conf.pwd);
+
+			xmpp_connect_client(conn, NULL, 0, conn_handler, ctx);
+		}
 	}
 
 	xmpp_conn_release(conn);
