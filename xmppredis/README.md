@@ -102,15 +102,6 @@ Also, may be you want install a PHP-extension:
 
     $ apt-get install php5-redis
 
-Download and install lib ini:
-
-    $ git clone https://github.com/vaclav2016/ini/
-    $ cd ini
-    $ cmake ./
-    $ make
-    $ sudo make install
-    $ cd ..
-
 Now, you can download and build xmppredis:
 
     $ git clone https://github.com/vaclav2016/xmppredis
