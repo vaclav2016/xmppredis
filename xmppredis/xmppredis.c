@@ -77,8 +77,8 @@ typedef struct XmppRedisContext {
 int version_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void * const userdata) {
 	xmpp_stanza_t *reply, *query, *name, *version, *text;
 	const char *ns;
-	XMPP_REDIS_CONTEXT conf = userdata;
-	xmpp_ctx_t *ctx = conf->ctx;
+	XMPP_REDIS_CONTEXT xrCtx = userdata;
+	xmpp_ctx_t *ctx = xrCtx->ctx;
 
 	reply = xmpp_stanza_reply(stanza);
 	xmpp_stanza_set_type(reply, "result");
@@ -117,8 +117,8 @@ int version_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void * const userdata) {
 	xmpp_stanza_t *reply, *body, *text;
 	char *intext, *replytext;
-	XMPP_REDIS_CONTEXT conf = userdata;
-	xmpp_ctx_t *ctx = conf->ctx;
+	XMPP_REDIS_CONTEXT xrCtx = userdata;
+	xmpp_ctx_t *ctx = xrCtx->ctx;
 
 	if(!xmpp_stanza_get_child_by_name(stanza, "body")) {
 		return 1;
@@ -149,7 +149,7 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 
 	char log[1024];
 	snprintf(log, sizeof(log), "Receive message from %s", replytext);
-	logger(LOG_INFO, log);
+	logger(LOG_INFO, xrCtx->jid, log);
 
 	strcat(replytext, "\n");
 	strcat(replytext, intext);
@@ -166,8 +166,8 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 	struct MessageQueue *nm = malloc(sizeof(struct MessageQueue));
 	nm->body = malloc(strlen(replytext)+1);
 	strcpy(nm->body, replytext);
-	nm->next = conf->sendToRedisQueue;
-	conf->sendToRedisQueue = nm;
+	nm->next = xrCtx->sendToRedisQueue;
+	xrCtx->sendToRedisQueue = nm;
 
 	free(replytext);
 	return 1;
@@ -177,47 +177,43 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status, 
 		  const int error, xmpp_stream_error_t * const stream_error,
 		  void * const userdata) {
-	XMPP_REDIS_CONTEXT conf = userdata;
-	xmpp_ctx_t *ctx = conf->ctx;
+	XMPP_REDIS_CONTEXT xrCtx = userdata;
+	xmpp_ctx_t *ctx = xrCtx->ctx;
 
 	if (status == XMPP_CONN_CONNECT) {
 		xmpp_stanza_t* pres;
 
-		char log[1024];
-		snprintf(log, sizeof(log), "Connected to jabber server for %s", conf->jid);
-		logger(LOG_INFO, log);
+		logger(LOG_INFO, xrCtx->jid, "Connected to jabber server");
 
-		xmpp_handler_add(conn,version_handler, "jabber:iq:version", "iq", NULL, conf);
-		xmpp_handler_add(conn,message_handler, NULL, "message", NULL, conf);
+		xmpp_handler_add(conn,version_handler, "jabber:iq:version", "iq", NULL, xrCtx);
+		xmpp_handler_add(conn,message_handler, NULL, "message", NULL, xrCtx);
 
 		pres = xmpp_stanza_new(ctx);
 		xmpp_stanza_set_name(pres, "presence");
 		xmpp_send(conn, pres);
 		xmpp_stanza_release(pres);
-		conf->online = 1;
+		xrCtx->online = 1;
 	} else if (status == XMPP_CONN_DISCONNECT || status == XMPP_CONN_FAIL){
-		char log[1024];
-		snprintf(log, sizeof(log), "Disconnect from jabber server for %s", conf->jid);
-		logger(LOG_INFO, log);
-		conf->online = 0;
+		logger(LOG_INFO, xrCtx->jid, "Disconnected from jabber server");
+		xrCtx->online = 0;
 	}
 }
 
-redisContext *connectRedis(XMPP_REDIS_CONTEXT conf, redisContext *rc) {
+redisContext *connectRedis(XMPP_REDIS_CONTEXT xrCtx, redisContext *rc) {
 	if (rc == NULL || rc->err) {
-		logger(LOG_INFO, "Reconnect to REDIS-server");
+		logger(LOG_INFO, xrCtx->jid, "Reconnect to REDIS-server");
 		if (rc) {
 			redisFree(rc);
 		}
-		rc = redisConnectWithTimeout(conf->redisHost, conf->redisPort, conf->redisTimeout);
+		rc = redisConnectWithTimeout(xrCtx->redisHost, xrCtx->redisPort, xrCtx->redisTimeout);
 		if (rc != NULL && !rc->err) {
-			logger(LOG_INFO, "Connected to REDIS-server");
+			logger(LOG_INFO, xrCtx->jid, "Connected to REDIS-server");
 		}
 	}
 	return rc;
 }
 
-void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
+void sendMessage(XMPP_REDIS_CONTEXT xrCtx, char *messageSource) {
 	char *toJid = messageSource;
 	char *messageBody = strchr(messageSource, '\n');
 
@@ -230,7 +226,7 @@ void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
 	if(strchr(toJid, '@') != NULL && strchr(toJid, '.') != NULL && strncmp(Prefix, toJid, PrefixLen) == 0 ) {
 		char log[1024];
 		snprintf(log, sizeof(log), "Send message to %s", toJid);
-		logger(LOG_INFO, log);
+		logger(LOG_INFO, xrCtx->jid, log);
 
 		toJid += PrefixLen;
 	} else {
@@ -240,33 +236,34 @@ void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
 	SKIP_SPACE(messageBody);
 	SKIP_SPACE(toJid);
 
-	xmpp_stanza_t *newMsg = xmpp_message_new(ctx, "chat", toJid, NULL /* id */);
+	xmpp_stanza_t *newMsg = xmpp_message_new(xrCtx->ctx, "chat", toJid, NULL /* id */);
 	xmpp_message_set_body(newMsg, messageBody);
-	xmpp_send(conn, newMsg);
+	xmpp_send(xrCtx->conn, newMsg);
 	xmpp_stanza_release(newMsg);
 }
 
 void *redisClientThread(void *args) {
-	XMPP_REDIS_CONTEXT conf = args;
-	redisContext *rSubscCtx = connectRedis(conf, NULL);
+	XMPP_REDIS_CONTEXT xrCtx = args;
+	logger(LOG_DEBUG, xrCtx->jid, "redisClientThread()");
+	redisContext *rSubscCtx = connectRedis(xrCtx, NULL);
 	while(1) {
-		rSubscCtx = connectRedis(conf, rSubscCtx);
-		redisReply *reply = redisCommand(rSubscCtx, conf->subscribeCmd);
+		rSubscCtx = connectRedis(xrCtx, rSubscCtx);
+		redisReply *reply = redisCommand(rSubscCtx, xrCtx->subscribeCmd);
 		freeReplyObject(reply);
 		while(redisGetReply(rSubscCtx, (void**)&reply) == REDIS_OK) {
 			if (reply->type == REDIS_REPLY_ARRAY) {
-				pthread_mutex_lock(&conf->fromRedisQueueLock);
+				pthread_mutex_lock(&xrCtx->fromRedisQueueLock);
 				int i;
 				for (i = 0; i < reply->elements; i++) {
 					if(reply->element[i]->type == REDIS_REPLY_STRING) {
 						struct MessageQueue *msg = malloc(sizeof(struct MessageQueue));
 						msg->body = malloc(strlen(reply->element[i]->str) + 1);
 						strcpy(msg->body, reply->element[i]->str);
-						msg->next = conf->fromRedisQueue;
-						conf->fromRedisQueue = msg;
+						msg->next = xrCtx->fromRedisQueue;
+						xrCtx->fromRedisQueue = msg;
 					}
 				}
-				pthread_mutex_unlock(&conf->fromRedisQueueLock);
+				pthread_mutex_unlock(&xrCtx->fromRedisQueueLock);
 			}
 			freeReplyObject(reply);
 		}
@@ -275,24 +272,24 @@ void *redisClientThread(void *args) {
 	return NULL;
 }
 
-int readConfig(void *config, XMPP_REDIS_CONTEXT conf, char *botSectionName) {
+int readConfig(void *config, XMPP_REDIS_CONTEXT xrCtx, char *botSectionName) {
 	char redisSectionName[256];
 
 	if (config == NULL) {
-		logger(LOG_ERROR, "ini_load fail");
+		logger(LOG_ERROR, "main thread", "ini_load fail");
 		return 1;
 	}
 
 	ini_getstr(config, botSectionName, "redis", redisSectionName, sizeof(redisSectionName));
-	ini_getstr(config, botSectionName, "jid", conf->jid, DEFAUL_STR_SIZE);
-	ini_getstr(config, botSectionName, "password", conf->pwd, DEFAUL_STR_SIZE);
+	ini_getstr(config, botSectionName, "jid", xrCtx->jid, DEFAUL_STR_SIZE);
+	ini_getstr(config, botSectionName, "password", xrCtx->pwd, DEFAUL_STR_SIZE);
 
-	ini_getstr(config, redisSectionName, "host", conf->redisHost, DEFAUL_STR_SIZE);
-	ini_getint(config, redisSectionName, "port", &conf->redisPort);
+	ini_getstr(config, redisSectionName, "host", xrCtx->redisHost, DEFAUL_STR_SIZE);
+	ini_getint(config, redisSectionName, "port", &xrCtx->redisPort);
 
-	ini_getstr(config, botSectionName, "inbound", conf->inboundQueue, DEFAUL_STR_SIZE);
-	ini_getstr(config, botSectionName, "outbound", conf->outboundQueue, DEFAUL_STR_SIZE);
-
+	ini_getstr(config, botSectionName, "inbound", xrCtx->inboundQueue, DEFAUL_STR_SIZE);
+	ini_getstr(config, botSectionName, "outbound", xrCtx->outboundQueue, DEFAUL_STR_SIZE);
+printf("%s\n", xrCtx->jid);
 	return 0;
 
 }
@@ -301,7 +298,7 @@ void sendMessages_once(XMPP_REDIS_CONTEXT xrCtx) {
 	struct MessageQueue *this;
 	while ( (this = xrCtx->sendToXmppQueue) != NULL) {
 		xrCtx->sendToXmppQueue = xrCtx->sendToXmppQueue->next;
-		sendMessage(xrCtx->ctx, xrCtx->conn, this->body);
+		sendMessage(xrCtx, this->body);
 		free(this->body);
 		free(this);
 	}
@@ -309,13 +306,13 @@ void sendMessages_once(XMPP_REDIS_CONTEXT xrCtx) {
 
 void populateMessagesFromRedis(XMPP_REDIS_CONTEXT xrCtx) {
 	struct MessageQueue *this;
-	pthread_mutex_lock(&xrCtx->fromRedisQueueLock);
+	pthread_mutex_lock(&(xrCtx->fromRedisQueueLock));
 	while( (this = xrCtx->fromRedisQueue) != NULL ) {
 		xrCtx->fromRedisQueue = xrCtx->fromRedisQueue->next;
 		this->next = xrCtx->sendToXmppQueue;
 		xrCtx->sendToXmppQueue = this;
 	}
-	pthread_mutex_unlock(&xrCtx->fromRedisQueueLock);
+	pthread_mutex_unlock(&(xrCtx->fromRedisQueueLock));
 }
 
 void populateMesageToRedis(XMPP_REDIS_CONTEXT xrCtx) {
@@ -340,61 +337,43 @@ void populateMesageToRedis(XMPP_REDIS_CONTEXT xrCtx) {
 }
 
 int validateConfig(XMPP_REDIS_CONTEXT xrCtx) {
+	if(xrCtx == NULL) {
+		return 1;
+	}
 	if(strlen(xrCtx->jid)==0) {
-		logger(LOG_ERROR, "Invalid config. Empty xmpp/jid");
+		logger(LOG_ERROR, "main thread", "Invalid config. Empty xmpp/jid");
 		return 1;
 	}
 	if(strlen(xrCtx->pwd)==0) {
-		logger(LOG_ERROR, "Invalid config. Empty xmpp/pass");
+		logger(LOG_ERROR, "main thread", "Invalid config. Empty xmpp/pass");
 		return 1;
 	}
 	if(strlen(xrCtx->redisHost)==0) {
-		logger(LOG_ERROR, "Invalid config. Empty redis/host");
+		logger(LOG_ERROR, "main thread", "Invalid config. Empty redis/host");
 		return 1;
 	}
 	if(xrCtx->redisPort == 0) {
-		logger(LOG_ERROR, "Invalid config. Empty redis/port");
+		logger(LOG_ERROR, "main thread", "Invalid config. Empty redis/port");
 		return 1;
 	}
 	if(strlen(xrCtx->inboundQueue)==0) {
-		logger(LOG_ERROR, "Invalid config. Empty queue/inbound");
+		logger(LOG_ERROR, "main thread", "Invalid config. Empty queue/inbound");
 		return 1;
 	}
 	if(strlen(xrCtx->outboundQueue)==0) {
-		logger(LOG_ERROR, "Invalid config. Empty queue/outbound");
+		logger(LOG_ERROR, "main thread", "Invalid config. Empty queue/outbound");
 		return 1;
 	}
 	return 0;
 }
 
-void startBot(char *name, void *cfg) {
-	XMPP_REDIS_CONTEXT xrCtx = malloc(sizeof(struct XmppRedisContext));
-	xrCtx->redisTimeout.tv_sec = 10;
-	xrCtx->redisTimeout.tv_usec = 500000;
-	xrCtx->fromRedisQueue = NULL;
-	xrCtx->sendToXmppQueue = NULL;
-	xrCtx->sendToRedisQueue = NULL;
-	xrCtx->online = 0;
-	xrCtx->conn = NULL;
-	pthread_mutex_init(&xrCtx->fromRedisQueueLock, NULL);
+void *botCycleThread(void *args) {
+	XMPP_REDIS_CONTEXT xrCtx = args;
 
-	if(readConfig(cfg, xrCtx, name)) {
-		logger(LOG_ERROR, "Could not read config");
-		return;
-	}
-	if(validateConfig(xrCtx)) {
-		logger(LOG_ERROR, "Bad config");
-		return;
-	}
-	snprintf(xrCtx->subscribeCmd, DEFAUL_STR_SIZE, SubscribeCmdTemplate, xrCtx->outboundQueue);
-
-//	log = xmpp_get_default_logger(XMPP_LEVEL_DEBUG); /* pass NULL instead to silence output */
-	xmpp_get_default_logger((xmpp_log_level_t)NULL);
 //	ctx = xmpp_ctx_new(NULL, log);
 	xrCtx->ctx = xmpp_ctx_new(NULL, NULL);
 
-	pthread_t thread;
-	pthread_create(&thread, NULL, redisClientThread, xrCtx);
+	logger(LOG_DEBUG, xrCtx->jid, "botCycleThread()");
 
 	while(1) {
 		if(xrCtx->online) {
@@ -421,20 +400,53 @@ void startBot(char *name, void *cfg) {
 		}
 	}
 
-	logger(LOG_INFO, "Shutdown");
+	logger(LOG_INFO, xrCtx->jid, "Shutdown");
 	if(xrCtx->conn!=NULL) {
 		xmpp_conn_release(xrCtx->conn);
 		xrCtx->conn = NULL;
 	}
 	xmpp_ctx_free(xrCtx->ctx);
 
-	pthread_mutex_destroy(&xrCtx->fromRedisQueueLock);
+	pthread_mutex_destroy(&(xrCtx->fromRedisQueueLock));
 	free(xrCtx);
+	return NULL;
+}
+
+void startBot(char *name, void *cfg) {
+	XMPP_REDIS_CONTEXT xrCtx = malloc(sizeof(struct XmppRedisContext));
+	xrCtx->redisTimeout.tv_sec = 10;
+	xrCtx->redisTimeout.tv_usec = 500000;
+	xrCtx->fromRedisQueue = NULL;
+	xrCtx->sendToXmppQueue = NULL;
+	xrCtx->sendToRedisQueue = NULL;
+	xrCtx->online = 0;
+	xrCtx->conn = NULL;
+	pthread_mutex_init(&(xrCtx->fromRedisQueueLock), NULL);
+
+	if(readConfig(cfg, xrCtx, name)) {
+		logger(LOG_ERROR, name, "Could not read config");
+		return;
+	}
+
+	if(validateConfig(xrCtx)) {
+		logger(LOG_ERROR, name, "Bad config");
+		return;
+	}
+
+	snprintf(xrCtx->subscribeCmd, DEFAUL_STR_SIZE, SubscribeCmdTemplate, xrCtx->outboundQueue);
+
+	logger(LOG_INFO, xrCtx->jid, "Start");
+
+	pthread_t thread1;
+	pthread_create(&thread1, NULL, botCycleThread, xrCtx);
+
+	pthread_t thread2;
+	pthread_create(&thread2, NULL, redisClientThread, xrCtx);
 }
 
 int main(int argc, char **argv) {
-	if(argc != 3) {
-		error(1, errno, "Usage: xmppredis section config_file\n");
+	if(argc != 2) {
+		error(1, errno, "Usage: xmppredis config_file\n");
 	}
 
 	pid_t pid = fork();
@@ -442,25 +454,53 @@ int main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 	if (pid > 0) {
-		printf("%d", pid);
+		printf("%d\n", pid);
 		exit(EXIT_SUCCESS);
 	}
 	umask(0);
+
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
 
 	xmpp_initialize();
+//	log = xmpp_get_default_logger(XMPP_LEVEL_DEBUG); /* pass NULL instead to silence output */
+	xmpp_get_default_logger((xmpp_log_level_t)NULL);
 
-	void *config = ini_load(argv[2]);
+	void *config = ini_load(argv[1]);
+	char buf[1024];
 
-	char logFileName[1024];
-	ini_getstr(config, "", "log", logFileName, sizeof(logFileName));
-	logger_init(logFileName);
+	ini_getstr(config, "", "log", buf, sizeof(buf));
+	logger_init(buf);
 
+	int autoStartLen = ini_strlen(config, "", "autostart");
+	char *bots = malloc(autoStartLen + 1);
+	ini_getstr(config, "", "autostart", bots, autoStartLen + 1);
 
-	startBot(argv[1], config);
+	char *pos = bots;
+	char *end;
+
+	while(pos != NULL) {
+		while(*pos<=' ' && *pos!=0) {
+			pos++;
+		}
+		if(*pos==0) {
+			break;
+		}
+		end = strchr(pos, ',');
+		if(end != NULL) {
+			*end = 0;
+		}
+		strcpy(buf, pos);
+		startBot(buf, config);
+		pos = end != NULL ? end + 1 : NULL;
+	}
+
+	free(bots);
 	ini_free(config);
+	while(1) {
+		sleep(9000);
+	}
 	xmpp_shutdown();
 	logger_destroy();
 	return 0;

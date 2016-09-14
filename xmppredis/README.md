@@ -53,10 +53,12 @@ So, if you want receive jabber-messages via xmppredis - you must execute `SUBSCR
 
 You can run it with:
 
-    $ xmppredis testbot xmppredis.conf
+    $ xmppredis xmppredis.conf > /var/run/xmppredis.pid
 
-Where `testbot` - is a section into .conf file with bot profile.
 Lets check `xmppredis.conf`:
+
+    log=/var/log/xmppredis.log
+    autostart=testbot
 
     [localhostRedis]
 
@@ -73,13 +75,11 @@ Lets check `xmppredis.conf`:
     inbound=in_testbot
     outbound=out_testbot
 
-So, when we run 
+`autostart` - this is bot names (section) which will be started (divided by coma). For example, you can have a few bots started:
 
-    $ xmppredis testbot xmppredis.conf
+    autostart=testbot,newsbot,rssbot
 
-we mean section `[testbot]` with bot configuration.
-
-String `redis=localhostRedis` has the same reference - it is mean to take [REDIS](http://redis.io/) host/port from section `[localhostRedis]`.
+String `redis=localhostRedis` has reference - it is mean to take [REDIS](http://redis.io/) host/port from section `[localhostRedis]`.
 
 So, multiple bot can have reference to the same [REDIS](http://redis.io/)-server.
 

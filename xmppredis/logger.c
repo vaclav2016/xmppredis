@@ -40,18 +40,19 @@ char logFileName[1024];
 pthread_mutex_t logMutex;
 
 void logger_init(char *fname) {
-	strncpy(logFileName, fname, sizeof(logFileName));
+	strcpy(logFileName, fname);
 	pthread_mutex_init(&logMutex, NULL);
 }
 
-void logger(const char* tag, const char* message) {
+void logger(const char* tag, const char *sender, const char* message) {
 	pthread_mutex_lock(&logMutex);
 
 	time_t t;
 	time(&t);
 	struct tm *now = localtime(&t);
+//	printf("%i-%i-%i %i:%i:%i [%s] [%s] %s\n", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec, tag, sender, message);
 	FILE *f = fopen(logFileName, "a");
-	fprintf(f, "%i-%i-%i %i:%i:%i [%s] %s\n", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec, tag, message);
+	fprintf(f, "%i-%i-%i %i:%i:%i [%s] [%s] %s\n", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec, tag, sender, message);
 	fclose(f);
 
 	pthread_mutex_unlock(&logMutex);

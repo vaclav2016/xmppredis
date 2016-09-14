@@ -36,7 +36,7 @@ DEALINGS IN THE SOFTWARE.
 #define LOG_ERROR "ERROR"
 
 extern void logger_init(char *);
-extern void logger(const char* tag, const char* message);
+extern void logger(const char* tag, const char *sender, const char* message);
 extern void logger_destroy();
 
 #endif
