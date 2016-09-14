@@ -37,7 +37,8 @@ DEALINGS IN THE SOFTWARE.
 #include <pthread.h>
 #include <unistd.h>
 #include <hiredis/hiredis.h>
-#include <ini/ini.h>
+#include "ini.h"
+#include "logger.h"
 
 #define MESSAGE_BUF_SIZE 1024*64
 #define MAX_INCOME_MESSAGE_SIZE 4*1024
@@ -77,7 +78,6 @@ int version_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 	const char *ns;
 	XMPP_REDIS_CONTEXT conf = userdata;
 	xmpp_ctx_t *ctx = conf->ctx;
-	printf("Received version request from %s\n", xmpp_stanza_get_from(stanza));
 
 	reply = xmpp_stanza_reply(stanza);
 	xmpp_stanza_set_type(reply, "result");
@@ -145,7 +145,11 @@ int message_handler(xmpp_conn_t * const conn, xmpp_stanza_t * const stanza, void
 	if( stop != NULL ) {
 		*stop = 0;
 	}
-	printf("\033[35mReceive from \033[32m%s\033[37m\n", replytext);
+
+	char log[1024];
+	snprintf(log, sizeof(log), "Receive message from %s", replytext);
+	logger(LOG_INFO, log);
+
 	strcat(replytext, "\n");
 	strcat(replytext, intext);
 	xmpp_free(ctx, intext);
@@ -177,7 +181,11 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 
 	if (status == XMPP_CONN_CONNECT) {
 		xmpp_stanza_t* pres;
-		fprintf(stderr, "\033[32mConnected to JABBER-server\033[37m\n");
+
+		char log[1024];
+		snprintf(log, sizeof(log), "Connected to jabber server for %s", conf->jid);
+		logger(LOG_INFO, log);
+
 		xmpp_handler_add(conn,version_handler, "jabber:iq:version", "iq", NULL, conf);
 		xmpp_handler_add(conn,message_handler, NULL, "message", NULL, conf);
 
@@ -187,20 +195,22 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 		xmpp_stanza_release(pres);
 		conf->online = 1;
 	} else if (status == XMPP_CONN_DISCONNECT || status == XMPP_CONN_FAIL){
-		fprintf(stderr, "\033[31mDisconnect from JABBER-server\033[37m\n");
+		char log[1024];
+		snprintf(log, sizeof(log), "Disconnect from jabber server for %s", conf->jid);
+		logger(LOG_INFO, log);
 		conf->online = 0;
 	}
 }
 
 redisContext *connectRedis(XMPP_REDIS_CONTEXT conf, redisContext *rc) {
 	if (rc == NULL || rc->err) {
-		fprintf(stderr, "\033[31mReconnect to REDIS-server\033[37m\n");
+		logger(LOG_INFO, "Reconnect to REDIS-server");
 		if (rc) {
 			redisFree(rc);
 		}
 		rc = redisConnectWithTimeout(conf->redisHost, conf->redisPort, conf->redisTimeout);
 		if (rc != NULL && !rc->err) {
-			fprintf(stderr, "\033[32mConnected to REDIS-server\033[37m\n");
+			logger(LOG_INFO, "Connected to REDIS-server");
 		}
 	}
 	return rc;
@@ -217,7 +227,10 @@ void sendMessage(xmpp_ctx_t *ctx, xmpp_conn_t *conn, char *messageSource) {
 	messageBody++;
 
 	if(strchr(toJid, '@') != NULL && strchr(toJid, '.') != NULL && strncmp(Prefix, toJid, PrefixLen) == 0 ) {
-		printf("\033[36mSend to \033[32m%s\033[37m\n", toJid);
+		char log[1024];
+		snprintf(log, sizeof(log), "Send message to %s", toJid);
+		logger(LOG_INFO, log);
+
 		toJid += PrefixLen;
 	} else {
 		return;

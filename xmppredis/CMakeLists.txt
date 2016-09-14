@@ -11,7 +11,7 @@ find_package (Hiredis REQUIRED)
 INCLUDE(CheckIncludeFile)
 CHECK_INCLUDE_FILE(strophe.h HAVE_STROPHE)
 
-ADD_EXECUTABLE(xmppredis xmppredis.c ini.c ini.h)
+ADD_EXECUTABLE(xmppredis xmppredis.c ini.c ini.h logger.h logger.c)
 TARGET_LINK_LIBRARIES(xmppredis strophe hiredis ${CMAKE_THREAD_LIBS_INIT})
 
 install (TARGETS xmppredis DESTINATION bin)
