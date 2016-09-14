@@ -52,7 +52,7 @@ void logger(const char* tag, const char *sender, const char* message) {
 	struct tm *now = localtime(&t);
 //	printf("%i-%i-%i %i:%i:%i [%s] [%s] %s\n", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec, tag, sender, message);
 	FILE *f = fopen(logFileName, "a");
-	fprintf(f, "%i-%i-%i %i:%i:%i [%s] [%s] %s\n", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec, tag, sender, message);
+	fprintf(f, "%0.4i-%0.2i-%0.2i %0.2i:%0.2i:%0.2i [%s] [%s] %s\n", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec, tag, sender, message);
 	fclose(f);
 
 	pthread_mutex_unlock(&logMutex);

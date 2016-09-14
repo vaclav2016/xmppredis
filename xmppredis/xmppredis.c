@@ -201,7 +201,6 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 
 redisContext *connectRedis(XMPP_REDIS_CONTEXT xrCtx, redisContext *rc) {
 	if (rc == NULL || rc->err) {
-		logger(LOG_INFO, xrCtx->jid, "Reconnect to REDIS-server");
 		if (rc) {
 			redisFree(rc);
 		}
@@ -289,7 +288,7 @@ int readConfig(void *config, XMPP_REDIS_CONTEXT xrCtx, char *botSectionName) {
 
 	ini_getstr(config, botSectionName, "inbound", xrCtx->inboundQueue, DEFAUL_STR_SIZE);
 	ini_getstr(config, botSectionName, "outbound", xrCtx->outboundQueue, DEFAUL_STR_SIZE);
-printf("%s\n", xrCtx->jid);
+
 	return 0;
 
 }
@@ -382,20 +381,27 @@ void *botCycleThread(void *args) {
 			populateMessagesFromRedis(xrCtx);
 			sendMessages_once(xrCtx);
 		} else {
+logger(LOG_DEBUG, xrCtx->jid, "Try reconnect");
 			if(xrCtx->conn!=NULL) {
 				xmpp_conn_release(xrCtx->conn);
 				xrCtx->conn = NULL;
 			}
 			xrCtx->conn = xmpp_conn_new(xrCtx->ctx);
-			xmpp_conn_set_keepalive(xrCtx->conn, 60000, 30000);
+			if(xrCtx->conn != NULL) {
 
-			xmpp_conn_set_jid(xrCtx->conn, xrCtx->jid);
-			xmpp_conn_set_pass(xrCtx->conn, xrCtx->pwd);
+				xmpp_conn_set_jid(xrCtx->conn, xrCtx->jid);
+				xmpp_conn_set_pass(xrCtx->conn, xrCtx->pwd);
 
-			xmpp_connect_client(xrCtx->conn, NULL, 0, conn_handler, xrCtx);
-
-			while(!xrCtx->online) {
-				xmpp_run_once(xrCtx->ctx, 3*60*1000);
+				if(xmpp_connect_client(xrCtx->conn, NULL, 0, conn_handler, xrCtx) == 0) {
+					xmpp_conn_set_keepalive(xrCtx->conn, 60, 60);
+					time_t startTime = time(NULL);
+					while((!xrCtx->online) && (time(NULL)-startTime < 45)) {
+						xmpp_run_once(xrCtx->ctx, 45*1000);
+					}
+				}
+			}
+			if(!xrCtx->online) {
+				sleep(15);
 			}
 		}
 	}
@@ -437,11 +443,11 @@ void startBot(char *name, void *cfg) {
 
 	logger(LOG_INFO, xrCtx->jid, "Start");
 
-	pthread_t thread1;
-	pthread_create(&thread1, NULL, botCycleThread, xrCtx);
+	pthread_t jabberTh;
+	pthread_create(&jabberTh, NULL, botCycleThread, xrCtx);
 
-	pthread_t thread2;
-	pthread_create(&thread2, NULL, redisClientThread, xrCtx);
+	pthread_t redisTh;
+	pthread_create(&redisTh, NULL, redisClientThread, xrCtx);
 }
 
 int main(int argc, char **argv) {
