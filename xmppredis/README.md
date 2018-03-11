@@ -27,7 +27,8 @@ It works just via [REDIS](http://redis.io/)-commands [PUBLISH](http://redis.io/c
 
 This example PHP-script is try to send message to JID somebody@a35a17e05e4z6vxdl.onion:
 
-    <?php
+```php
+    <?php
 
     $jid = "somebody@a35a17e05e4z6vxdl.onion";
     $msg = "Hello, world!";
@@ -39,7 +40,8 @@ This example PHP-script is try to send message to JID somebody@a35a17e05e4z6vxdl
 
     echo "Done!";
 
-    ?>
+    ?>
+```
 
 How act this example?
 
